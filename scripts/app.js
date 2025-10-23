@@ -224,7 +224,7 @@ class BotanicalApp {
                     <p>Add your first plant to get started!</p>
                     <button class="btn-primary" id="add-first-plant">
                         <i class="fas fa-plus"></i>
-                        Add First Plant
+                        <span id="add-first-plant-text">Add First Plant</span>
                     </button>
                 </div>
             `;

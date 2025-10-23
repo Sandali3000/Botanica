@@ -226,6 +226,11 @@ input:focus, select:focus, textarea:focus {
     gap: 8px;
 }
 
+#add-first-plant {
+    margin: auto;
+    padding-bottom: 0;
+}
+
 .btn-primary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
     color: var(--white);

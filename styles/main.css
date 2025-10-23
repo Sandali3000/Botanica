@@ -178,6 +178,10 @@ body {
   margin-bottom: 2rem;
 }
 
+#add-first-plant-text {
+  margin-top: -0.75rem;
+}
+
 /* Enhanced About Section Styles */
 .about-content {
   max-width: 1200px;
