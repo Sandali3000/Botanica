@@ -246,6 +246,91 @@ input:focus, select:focus, textarea:focus {
     color: var(--white);
 }
 
+/* Form Styles */
+.plant-form {
+  background: var(--light);       /* Dark but clean surface */
+  color: var(--text);             /* Readable text */
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text);             /* Not green — improves readability */
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #334155;      /* Subtle border (slightly lighter than background) */
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: #1a2530;            /* Slightly darker than --light for depth */
+  color: var(--text);             /* Ensure text is readable */
+  transition: var(--transition);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);   /* Green focus ring */
+  box-shadow: 0 0 0 3px rgba(122, 168, 110, 0.25);
+}
+
+/* Image Upload */
+.upload-area {
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  background: rgba(30, 42, 56, 0.6); /* Semi-transparent dark */
+  color: var(--text-light);
+}
+
+.upload-area:hover {
+  background: var(--accent);
+  color: var(--text);             /* Light text on dark green */
+}
+
+.upload-area i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--secondary);
+}
+
+.upload-area:hover i {
+  color: var(--text);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--text);             /* Off-white for better contrast */
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid var(--text-light);
+  color: var(--text-light);
+}
+
+.btn-secondary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
 /* Filter Controls */
 .filter-controls {
     display: flex;
