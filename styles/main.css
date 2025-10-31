@@ -309,6 +309,7 @@ body {
   font-size: 3rem;
   margin-bottom: 1rem;
   position: relative;
+  color: #ffffff;
 }
 
 .about-hero-content p {
@@ -316,6 +317,7 @@ body {
   max-width: 600px;
   margin: 0 auto 2rem;
   opacity: 0.9;
+  color: #ffffff;
 }
 
 .hero-stats {
@@ -334,11 +336,13 @@ body {
   font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
+  color: #ffffff;
 }
 
 .stat-label {
   font-size: 0.9rem;
   opacity: 0.8;
+  color: #ffffff;
 }
 
 /* About Sections */
