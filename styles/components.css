@@ -1,3 +1,119 @@
+/* Search Bar Styles */
+.search-wrapper {
+  position: fixed;
+  left: 20px;
+  bottom: 100px; /* Added 10px more space above music player */
+  width: 280px;
+  z-index: 999;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  box-shadow: var(--shadow);
+  border: 2px solid var(--secondary);
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+  margin-bottom: 0; /* Remove any bottom margin */
+}
+
+.search-container:focus-within {
+  border-color: var(--accent);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 0.5rem;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--text);
+  outline: none;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-button:hover {
+  color: var(--accent);
+}
+
+.search-results-dropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 999;
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--secondary);
+  /* Ensure results don't go off-screen */
+  max-width: 280px;
+}
+
+.search-result-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: var(--light);
+}
+
+.search-result-title {
+  font-weight: bold;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-result-title i {
+  color: var(--secondary);
+  width: 20px;
+}
+
+.search-result-subtitle {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-left: 28px;
+}
+
+.search-result-category {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin-left: 28px;
+}
+
+.search-highlight {
+  background: var(--accent-light);
+  padding: 0 0.25rem;
+  border-radius: 2px;
+}
+
 /* Stats Grid */
 .stats-grid {
   display: grid;
@@ -159,6 +275,7 @@
 
 .form-group {
   margin-bottom: 1.5rem;
+  
 }
 
 .form-row {

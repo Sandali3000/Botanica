@@ -26,6 +26,7 @@ No backend — everything runs in your browser!
 - **💚 Wishlist**: Save plants you wish to collect later  
 - **📊 Dashboard**: Overview of your plant collection stats  
 - **🗓️ Care Calendar**: Set watering and maintenance reminders  
+- **🤖 AI Plant Care Assistant**: Chat with Botanica Bot for instant expert advice  
 - **🌓 Dark Mode**: Switch between light and dark themes  
 - **💾 Local Storage**: Your data stays on your device  
 - **📱 Responsive Design**: Works on desktop, tablet, and mobile  
@@ -37,9 +38,29 @@ No backend — everything runs in your browser!
 
 1. **Download** all the files to a folder  
 2. **Open** `index.html` in your web browser  
-3. **Start adding** your plants!  
+3. **[Optional] Set up the AI Chatbot** - See [CHATBOT_SETUP.md](CHATBOT_SETUP.md) for instructions  
+4. **Start adding** your plants!  
 
 No installation or server required!
+
+---
+
+## 🤖 AI Plant Care Assistant
+
+Botanica now includes an **AI-powered chatbot** that provides expert plant care advice! 
+
+### Quick Setup:
+1. Get a free Gemini API key: https://aistudio.google.com/app/apikey
+2. Paste it in `index.html` (in the `BOTANICA_CONFIG` section)
+3. Click the 🌱 chat button and start asking!
+
+### What You Can Ask:
+- "How often should I water my monstera?"
+- "Why are my plant's leaves turning yellow?"
+- "How do I propagate a pothos?"
+- "What plants are good for beginners?"
+
+**For detailed setup, see [CHATBOT_SETUP.md](CHATBOT_SETUP.md)**
 
 ---
 
@@ -131,16 +152,8 @@ Thank you for helping to make Botanica even better for all plant lovers 💚
 
 ## 👥 Contributors
 
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/Sandali3000"><img src="https://github.com/Sandali3000.png?size=100" width="100px;" alt="Sandali3000"/><br /><sub><b>Sandali3000</b></sub></a><br />📖 💻 🎨</td>
-    <td align="center"><a href="https://github.com/kaifansariw"><img src="https://github.com/kaifansariw.png?size=100" width="100px;" alt="kaifansariw"/><br /><sub><b>kaifansariw</b></sub></a><br />💻 🐛</td>
-  </tr>
-</table>
 
-**Legend:**  
-📖 Documentation | 💻 Code | 🎨 Design | 🐛 Bug Fixes | ✅ Tests  
 
----
+
 
 [🔝 Back to Top](#-botanica----plant-collection-app)

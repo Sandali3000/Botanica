@@ -4,7 +4,10 @@ class BotanicalApp {
     this.wishlistManager = new WishlistManager();
     this.imageHandler = new ImageHandler();
     this.currentPage = "dashboard";
-
+    
+    // Make app instance globally available for search
+    window.app = this;
+    
     this.init();
   }
 
@@ -13,8 +16,181 @@ class BotanicalApp {
     this.loadThemePreference();
     this.showPage("dashboard");
     this.updateDashboard();
-
+    this.initializeSearch();
     this.createFallingLeaves();
+  }
+
+  setDefaultWateringDate() {
+    // Set default date for last-watered input when page loads
+    const lastWateredInput = document.getElementById("last-watered");
+    if (lastWateredInput && !lastWateredInput.value) {
+      lastWateredInput.value = new Date().toISOString().split("T")[0];
+    }
+  }
+
+
+  initializeSearch() {
+    this.searchInput = document.getElementById('site-search');
+    this.searchResults = document.getElementById('search-results');
+    this.searchButton = document.querySelector('.search-button');
+
+    // Add event listeners
+    this.searchInput.addEventListener('input', this.debounce(() => this.handleSearch(), 300));
+    this.searchButton.addEventListener('click', () => this.handleSearch());
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!this.searchInput.contains(e.target) && !this.searchResults.contains(e.target)) {
+        this.searchResults.style.display = 'none';
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== this.searchInput) {
+        e.preventDefault();
+        this.searchInput.focus();
+      } else if (e.key === 'Escape' && this.searchResults.style.display !== 'none') {
+        this.searchResults.style.display = 'none';
+      }
+    });
+  }
+
+  debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  handleSearch() {
+    const query = this.searchInput.value.trim().toLowerCase();
+    if (query.length === 0) {
+      this.searchResults.style.display = 'none';
+      return;
+    }
+
+    const results = this.searchContent(query);
+    this.displaySearchResults(results, query);
+  }
+
+  searchContent(query) {
+    const results = [];
+    
+    // Search plants in collection
+    const plants = this.plantManager.getAllPlants();
+    plants.forEach(plant => {
+      if (this.matchesSearch(plant.name, query) || 
+          this.matchesSearch(plant.species, query) || 
+          this.matchesSearch(plant.description, query)) {
+        results.push({
+          title: plant.name,
+          category: 'My Plants',
+          type: 'plant',
+          data: plant
+        });
+      }
+    });
+
+    // Search wishlist items
+    const wishlist = this.wishlistManager.getWishlist();
+    wishlist.forEach(item => {
+      if (this.matchesSearch(item.name, query) || 
+          this.matchesSearch(item.notes, query)) {
+        results.push({
+          title: item.name,
+          category: 'Wishlist',
+          type: 'wishlist',
+          data: item
+        });
+      }
+    });
+
+    // Search navigation items
+    const navItems = [
+      { name: 'Dashboard', page: 'dashboard' },
+      { name: 'My Plants', page: 'collection' },
+      { name: 'Wishlist', page: 'wishlist' },
+      { name: 'Add Plant', page: 'add-plant' },
+      { name: 'Discover', page: 'discover' },
+      { name: 'Calendar', page: 'calendar' }
+    ];
+
+    navItems.forEach(item => {
+      if (this.matchesSearch(item.name, query)) {
+        results.push({
+          title: item.name,
+          category: 'Navigation',
+          type: 'page',
+          data: item.page
+        });
+      }
+    });
+
+    return results;
+  }
+
+  matchesSearch(text, query) {
+    return text && text.toLowerCase().includes(query);
+  }
+
+  displaySearchResults(results, query) {
+    if (results.length === 0) {
+      this.searchResults.innerHTML = '<div class="search-result-item"><div class="search-result-title">No results found</div></div>';
+      this.searchResults.style.display = 'block';
+      return;
+    }
+
+    const html = results.map(result => {
+      const highlightedTitle = this.highlightText(result.title, query);
+      return `
+        <div class="search-result-item" data-type="${result.type}" data-id="${result.type === 'page' ? result.data : result.data.id}">
+          <div class="search-result-title">${highlightedTitle}</div>
+          <div class="search-result-category">${result.category}</div>
+        </div>
+      `;
+    }).join('');
+
+    this.searchResults.innerHTML = html;
+    this.searchResults.style.display = 'block';
+
+    // Add click handlers to results
+    this.searchResults.querySelectorAll('.search-result-item').forEach(item => {
+      item.addEventListener('click', () => this.handleResultClick(item));
+    });
+  }
+
+  highlightText(text, query) {
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="search-highlight">$1</span>');
+  }
+
+  handleResultClick(resultElement) {
+    const type = resultElement.dataset.type;
+    const id = resultElement.dataset.id;
+
+    switch (type) {
+      case 'page':
+        this.showPage(id);
+        break;
+      case 'plant':
+        this.showPage('collection');
+        // TODO: Scroll to and highlight the specific plant
+        break;
+      case 'wishlist':
+        this.showPage('wishlist');
+        // TODO: Scroll to and highlight the specific wishlist item
+        break;
+    }
+
+    // Clear search
+    this.searchInput.value = '';
+    this.searchResults.style.display = 'none';
   }
 
   createFallingLeaves() {
@@ -355,6 +531,8 @@ class BotanicalApp {
             this.imageHandler.clearImage();
           }
           document.getElementById("plant-form")?.reset();
+          // Set default watering date
+          this.setDefaultWateringDate();
           break;
         // No case needed for help-center, privacy-policy, or terms-of-service
         // as they are just simple content pages with no special init logic.
@@ -463,6 +641,8 @@ class BotanicalApp {
       .map((plant) => this.createPlantCard(plant))
       .join("");
     this.bindPlantCardEvents(container);
+
+    window.renderCollection = () => this.renderCollection();
   }
 
   bindPlantCardEvents(container) {
@@ -486,40 +666,80 @@ class BotanicalApp {
     // Use placeholder if no image
     const imageSrc = plant.image || "assets/images/demo_pic.png";
 
+    // Get watering status if schedule exists
+    let wateringStatusHTML = "";
+    if (plant.wateringSchedule && this.plantManager.getWateringStatus) {
+      const status = this.plantManager.getWateringStatus(plant);
+      wateringStatusHTML = `
+        <div class="watering-status status-${status.status}">${status.text}</div>
+        <button class="water-button" onclick="event.stopPropagation(); plantManager.quickWater('${plant.id}')">
+          <span>💧</span> Mark as Watered
+        </button>
+      `;
+    }
+
     return `
-      <div class="plant-card" data-plant-id="${plant.id}">
-        <img src="${imageSrc}" 
-          alt="${this.escapeHtml(plant.name)}" 
-          class="plant-image"
-          onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
-        <div class="plant-info">
-          <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
-          ${
-            plant.species
-              ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
-              : ""
-          }
-             <div class="plant-meta">
-            <span class="plant-type">${this.escapeHtml(plant.type)}</span>
-            <span class="plant-light">
-              <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
-              ${this.escapeHtml(plant.light)}
-            </span>
-          </div>
-          <div class="plant-badges">
-            <span class="badge small">Water: ${this.escapeHtml(
-              plant.wateringFrequency || "weekly"
-            )}</span>
-            <span class="badge small">${this.escapeHtml(
-              plant.difficulty
-                ? plant.difficulty.charAt(0).toUpperCase() +
-                    plant.difficulty.slice(1)
-                : "Easy"
-            )}</span>
-          </div>
-        </div>
-      </div>
-    `;
+            <div class="plant-card" data-plant-id="${plant.id}">
+                <img src="${imageSrc}" 
+                    alt="${plant.name}" 
+                    class="plant-image"
+                    onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+                <div class="plant-info">
+                    <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
+                    ${
+                      plant.species
+                        ? `<p class="plant-species">${this.escapeHtml(
+                            plant.species
+                          )}</p>`
+                        : ""
+                    }
+                    <div class="plant-meta">
+                        <span class="plant-type">${plant.type}</span>
+                        <span class="plant-light">
+                            <i class="${
+                              lightIcons[plant.light] || "fas fa-sun"
+                            }"></i>
+                            ${plant.light}
+                        </span>
+                    </div>
+                    ${wateringStatusHTML}
+                </div>
+            </div>
+        `;
+        //bug code
+    //   <div class="plant-card" data-plant-id="${plant.id}">
+    //     <img src="${imageSrc}"
+    //       alt="${this.escapeHtml(plant.name)}"
+    //       class="plant-image"
+    //       onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+    //     <div class="plant-info">
+    //       <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
+    //       ${
+    //         plant.species
+    //           ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
+    //           : ""
+    //       }
+    //          <div class="plant-meta">
+    //         <span class="plant-type">${this.escapeHtml(plant.type)}</span>
+    //         <span class="plant-light">
+    //           <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
+    //           ${this.escapeHtml(plant.light)}
+    //         </span>
+    //       </div>
+    //       <div class="plant-badges">
+    //         <span class="badge small">Water: ${this.escapeHtml(
+    //           plant.wateringFrequency || "weekly"
+    //         )}</span>
+    //         <span class="badge small">${this.escapeHtml(
+    //           plant.difficulty
+    //             ? plant.difficulty.charAt(0).toUpperCase() +
+    //                 plant.difficulty.slice(1)
+    //             : "Easy"
+    //         )}</span>
+    //       </div>
+    //     </div>
+    //   </div>
+    // `;
   }
 
   async handlePlantSubmit() {
@@ -537,6 +757,21 @@ class BotanicalApp {
       return;
     }
 
+    // Get watering schedule data
+    const wateringFrequency = document.getElementById("watering-frequency");
+    const lastWatered = document.getElementById("last-watered");
+    const reminderTime = document.getElementById("reminder-time");
+
+    const wateringSchedule = {
+      frequency: wateringFrequency ? parseInt(wateringFrequency.value) : 7,
+      lastWatered:
+        lastWatered && lastWatered.value
+          ? lastWatered.value
+          : new Date().toISOString().split("T")[0],
+      reminderTime: reminderTime ? reminderTime.value : "09:00",
+      notes: "",
+    };
+
     // Get form data
     const plantData = {
       name: plantName.value.trim(),
@@ -546,6 +781,7 @@ class BotanicalApp {
       notes: document.getElementById("plant-notes").value.trim(),
       image: this.imageHandler.getImageData(),
       createdAt: new Date().toISOString(),
+      wateringSchedule: wateringSchedule, // ADD THIS LINE
     };
 
     try {
@@ -553,7 +789,10 @@ class BotanicalApp {
       this.plantManager.addPlant(plantData);
 
       // Show success message
-      this.showNotification("Plant added successfully!", "success");
+      this.showNotification(
+        "🌱 Plant added with watering schedule!",
+        "success"
+      );
 
       // Reset form and return to collection
       this.imageHandler.clearImage();

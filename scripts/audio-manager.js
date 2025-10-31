@@ -4,6 +4,23 @@ class AudioManager {
     this.isPlaying = false;
     this.isMuted = false;
     this.currentTrackIndex = 0;
+    this.soundEffectsEnabled = true;
+    
+    // Sound effects for button clicks
+    this.soundEffects = {
+      click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'), // Soft click
+      success: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'), // Success tone
+      navigation: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'), // Soft navigation
+      toggle: new Audio('https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3'), // Toggle switch
+      delete: new Audio('https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'), // Soft warning
+      add: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'), // Positive chime
+      modal: new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3') // Soft pop
+    };
+    
+    // Set volume for sound effects (quieter than background music)
+    Object.values(this.soundEffects).forEach(sound => {
+      sound.volume = 0.15;
+    });
     
     // Nature sound tracks (using royalty-free URLs)
     this.tracks = [
@@ -113,9 +130,11 @@ class AudioManager {
     const savedMuted = localStorage.getItem('audio-muted');
     const savedVolume = localStorage.getItem('audio-volume');
     const savedTrack = localStorage.getItem('audio-track');
+    const savedSoundEffects = localStorage.getItem('audio-sound-effects');
     
     this.isPlaying = savedPlaying === 'true';
     this.isMuted = savedMuted === 'true';
+    this.soundEffectsEnabled = savedSoundEffects !== 'false'; // Default to true
     
     if (savedVolume) {
       this.audio.volume = parseFloat(savedVolume);
@@ -133,6 +152,7 @@ class AudioManager {
     localStorage.setItem('audio-muted', this.isMuted);
     localStorage.setItem('audio-volume', this.audio.volume);
     localStorage.setItem('audio-track', this.currentTrackIndex);
+    localStorage.setItem('audio-sound-effects', this.soundEffectsEnabled);
   }
 
   createAudioControls() {
@@ -151,6 +171,9 @@ class AudioManager {
         </button>
         <button id="audio-next" class="audio-btn" title="Next Track">
           <i class="fas fa-forward"></i>
+        </button>
+        <button id="audio-effects-toggle" class="audio-btn ${this.soundEffectsEnabled ? 'active' : ''}" title="Toggle Sound Effects">
+          <i class="fas fa-${this.soundEffectsEnabled ? 'bell' : 'bell-slash'}"></i>
         </button>
         <div class="audio-track-info">
           <i class="fas ${this.tracks[this.currentTrackIndex].icon}"></i>
@@ -224,6 +247,15 @@ class AudioManager {
 
       .audio-btn:active {
         transform: scale(0.95);
+      }
+
+      .audio-btn.active {
+        background: var(--secondary);
+        color: var(--white);
+      }
+
+      .audio-btn.active:hover {
+        background: var(--primary);
       }
 
       .audio-track-info {
@@ -369,6 +401,11 @@ class AudioManager {
       this.nextTrack();
     });
 
+    // Sound effects toggle
+    document.getElementById('audio-effects-toggle')?.addEventListener('click', () => {
+      this.toggleSoundEffects();
+    });
+
     // Volume control
     document.getElementById('audio-volume')?.addEventListener('input', (e) => {
       this.setVolume(e.target.value / 100);
@@ -384,6 +421,156 @@ class AudioManager {
     this.audio.addEventListener('ended', () => {
       this.nextTrack();
     });
+
+    // Add sound effects to all buttons on the page
+    this.attachButtonSounds();
+  }
+
+  attachButtonSounds() {
+    // Wait for DOM to be fully loaded
+    setTimeout(() => {
+      // Navigation buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.playSound('navigation'));
+      });
+
+      // Primary buttons (Add, Submit, etc.)
+      document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.addEventListener('click', () => this.playSound('add'));
+      });
+
+      // Secondary buttons (Cancel, Edit, etc.)
+      document.querySelectorAll('.btn-secondary').forEach(btn => {
+        btn.addEventListener('click', () => this.playSound('click'));
+      });
+
+      // Delete buttons
+      document.querySelectorAll('[class*="delete"], [class*="remove"]').forEach(btn => {
+        btn.addEventListener('click', () => this.playSound('delete'));
+      });
+
+      // Theme toggle
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        this.playSound('toggle');
+      });
+
+      // Modal triggers
+      document.querySelectorAll('.plant-card, .wishlist-card').forEach(card => {
+        card.addEventListener('click', () => this.playSound('modal'));
+      });
+
+      // Form submissions
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', (e) => {
+          this.playSound('success');
+        });
+      });
+
+      // Generic button clicks (fallback)
+      document.querySelectorAll('button:not([id^="audio-"])').forEach(btn => {
+        if (!btn.classList.contains('nav-btn') && 
+            !btn.classList.contains('btn-primary') && 
+            !btn.classList.contains('btn-secondary') &&
+            !btn.id.includes('delete') &&
+            !btn.id.includes('remove')) {
+          btn.addEventListener('click', () => this.playSound('click'));
+        }
+      });
+
+      // Add sound to dynamically created elements
+      this.observeDOMChanges();
+    }, 100);
+  }
+
+  observeDOMChanges() {
+    // Observe DOM changes to add sounds to dynamically created buttons
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            // Check if the added node is a button
+            if (node.tagName === 'BUTTON') {
+              this.addSoundToButton(node);
+            }
+            // Check for buttons within the added node
+            node.querySelectorAll?.('button').forEach(btn => {
+              this.addSoundToButton(btn);
+            });
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  addSoundToButton(btn) {
+    // Skip audio control buttons
+    if (btn.id && btn.id.startsWith('audio-')) return;
+
+    // Determine sound type based on button class/id
+    let soundType = 'click';
+    
+    if (btn.classList.contains('btn-primary')) {
+      soundType = 'add';
+    } else if (btn.classList.contains('nav-btn')) {
+      soundType = 'navigation';
+    } else if (btn.id.includes('delete') || btn.id.includes('remove') || 
+               btn.classList.contains('btn-delete') || btn.classList.contains('btn-remove')) {
+      soundType = 'delete';
+    } else if (btn.id === 'theme-toggle') {
+      soundType = 'toggle';
+    } else if (btn.classList.contains('modal-close')) {
+      soundType = 'modal';
+    }
+
+    // Add event listener if not already added
+    if (!btn.dataset.soundAttached) {
+      btn.addEventListener('click', () => this.playSound(soundType));
+      btn.dataset.soundAttached = 'true';
+    }
+  }
+
+  playSound(type) {
+    if (!this.soundEffectsEnabled) return;
+
+    const sound = this.soundEffects[type];
+    if (sound) {
+      // Clone the audio to allow multiple simultaneous plays
+      const soundClone = sound.cloneNode();
+      soundClone.volume = sound.volume;
+      soundClone.play().catch(err => {
+        console.warn('Sound effect play failed:', err);
+      });
+    }
+  }
+
+  toggleSoundEffects() {
+    this.soundEffectsEnabled = !this.soundEffectsEnabled;
+    this.updateSoundEffectsButton();
+    this.savePreferences();
+    
+    // Play a sound to confirm the toggle
+    if (this.soundEffectsEnabled) {
+      this.playSound('success');
+    }
+  }
+
+  updateSoundEffectsButton() {
+    const btn = document.getElementById('audio-effects-toggle');
+    if (btn) {
+      btn.innerHTML = `<i class="fas fa-${this.soundEffectsEnabled ? 'bell' : 'bell-slash'}"></i>`;
+      btn.title = this.soundEffectsEnabled ? 'Sound Effects On' : 'Sound Effects Off';
+      
+      if (this.soundEffectsEnabled) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
   }
 
   play() {

@@ -1,4 +1,51 @@
 /* Calendar Styles */
+:root {
+  --primary-color: #4CAF50;
+  --accent-color: #FF6B35;
+  --card-bg: #ffffff;
+  --bg-light: #f8f8f8;
+  --border-color: #e0e0e0;
+  --border-radius: 10px;
+  --border-radius-sm: 6px;
+  --text-muted: #777;
+}
+
+/* Layout */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fafafa;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem 2rem;
+}
+
+header nav a {
+  color: white;
+  margin-left: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+header nav a.active {
+  text-decoration: underline;
+}
+
+.page {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Controls */
 .calendar-controls {
   display: flex;
   justify-content: space-between;
@@ -18,13 +65,29 @@
   text-align: center;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
+.btn-primary:hover {
+  background: #3e8e41;
+}
+
+.btn-nav {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  padding: 0.3rem 0.8rem;
+}
+
+/* Calendar Grid */
 .calendar-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -38,6 +101,13 @@
   padding: 0.5rem;
 }
 
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
 .calendar-day {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -45,6 +115,7 @@
   min-height: 100px;
   padding: 0.5rem;
   position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .calendar-day.today {
@@ -77,16 +148,18 @@
   transform: translateY(-2px);
 }
 
+/* Upcoming Reminders */
 .reminders-list {
   margin-top: 2rem;
   padding: 1rem;
   background: var(--card-bg);
   border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
 }
 
 #upcoming-reminders {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -103,11 +176,39 @@
 .reminder-card .date {
   color: var(--accent-color);
   font-weight: bold;
+  font-size: 0.9rem;
+}
+/* 🌿 Calendar text visibility fix */
+.calendar-nav h3,
+.calendar-header span {
+  color: var(--text-color, #f0f0f0); /* Light text for dark background */
 }
 
-.reminder-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+.calendar-nav button {
+  background: var(--bg-light, #ffffff);
+  border: none;
+  color: var(--text-dark, #333);
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.calendar-nav button:hover {
+  background: var(--accent-color, #4CAF50);
+  color: #fff;
+}
+
+.calendar-controls {
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Optional: make the month title pop a bit */
+#current-month {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--accent-color, #A5D6A7);
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
 }

@@ -1,0 +1,27 @@
+.theme-toggle {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+.theme-toggle:hover {
+    background-color: var(--light) !important;
+    transform: translateY(-1px) !important;
+}
+
+.theme-toggle:active {
+    transform: translateY(0) !important;
+}
+
+.theme-toggle i {
+    pointer-events: none !important;
+}
+
+.theme-toggle span {
+    pointer-events: none !important;
+}
