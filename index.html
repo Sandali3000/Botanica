@@ -5,12 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="assets/icons/leaf.png" type="image/png" />
     <title>Botanica | Open Source Plant Collection</title>
+    
+    <!-- 🤖 Botanica Chatbot Configuration -->
+    <script>
+      window.BOTANICA_CONFIG = {
+        // Get your Gemini API key from: https://aistudio.google.com/app/apikey
+        GEMINI_API_KEY: 'your_gemini_api_key_here',
+        DEBUG_MODE: false,
+        MAX_MESSAGES_HISTORY: 20,
+        AUTO_FOCUS_INPUT: true,
+      };
+    </script>
+    
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/components.css" />
     <link rel="stylesheet" href="styles/responsive.css" />
     <link rel="stylesheet" href="styles/calendar.css" />
     <link rel="stylesheet" href="styles/dark-theme.css" />
     <link rel="stylesheet" href="styles/theme-button.css" />
+    <link rel="stylesheet" href="styles/chatbot.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -966,6 +979,12 @@
     
     <!-- Simple theme script -->
     <script src="scripts/simple-theme.js"></script>
+    
+    <!-- Chatbot scripts (must load before app.js) -->
+    <script src="scripts/env-config.js"></script>
+    <script src="scripts/chatbot-context.js"></script>
+    <script src="scripts/chatbot-api.js"></script>
+    <script src="scripts/chatbot-widget.js"></script>
     
     <!-- App scripts -->
     <script src="scripts/image-handler.js"></script>
