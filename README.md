@@ -26,6 +26,7 @@ No backend — everything runs in your browser!
 - **💚 Wishlist**: Save plants you wish to collect later  
 - **📊 Dashboard**: Overview of your plant collection stats  
 - **🗓️ Care Calendar**: Set watering and maintenance reminders  
+- **🤖 AI Plant Care Assistant**: Chat with Botanica Bot for instant expert advice  
 - **🌓 Dark Mode**: Switch between light and dark themes  
 - **💾 Local Storage**: Your data stays on your device  
 - **📱 Responsive Design**: Works on desktop, tablet, and mobile  
@@ -37,9 +38,29 @@ No backend — everything runs in your browser!
 
 1. **Download** all the files to a folder  
 2. **Open** `index.html` in your web browser  
-3. **Start adding** your plants!  
+3. **[Optional] Set up the AI Chatbot** - See [CHATBOT_SETUP.md](CHATBOT_SETUP.md) for instructions  
+4. **Start adding** your plants!  
 
 No installation or server required!
+
+---
+
+## 🤖 AI Plant Care Assistant
+
+Botanica now includes an **AI-powered chatbot** that provides expert plant care advice! 
+
+### Quick Setup:
+1. Get a free Gemini API key: https://aistudio.google.com/app/apikey
+2. Paste it in `index.html` (in the `BOTANICA_CONFIG` section)
+3. Click the 🌱 chat button and start asking!
+
+### What You Can Ask:
+- "How often should I water my monstera?"
+- "Why are my plant's leaves turning yellow?"
+- "How do I propagate a pothos?"
+- "What plants are good for beginners?"
+
+**For detailed setup, see [CHATBOT_SETUP.md](CHATBOT_SETUP.md)**
 
 ---
 
