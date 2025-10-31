@@ -10,17 +10,24 @@
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --radius: 12px;
   --transition: all 0.3s ease;
+  --tooltip-bg: rgba(18, 20, 22, 0.95);
+  --tooltip-color: #fff;
+  --tooltip-radius: 8px;
+  --tooltip-padding: 6px 10px;
+  --tooltip-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 [data-theme="dark"] {
-  --primary: #8bb574;
-  --secondary: #4a7c59;
-  --accent: #2d5a27;
-  --light: #2c3e50;
-  --white: #34495e;
-  --text: #ecf0f1;
-  --text-light: #bdc3c7;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --primary: #a6d388;
+  --secondary: #6ba584;
+  --accent: #4a7c59;
+  --light: #1a2634;
+  --white: #243447;
+  --text: #ffffff;
+  --text-light: #d1d8e0;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+  --tooltip-bg: #fff;
+  --tooltip-color: rgba(10, 12, 10, 0.9);
 }
 
 /* Reset and Base Styles */
@@ -64,6 +71,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 }
 
 .logo i {
@@ -102,11 +110,17 @@ body {
   background: transparent;
   color: var(--text-light);
   border-radius: var(--radius);
-  cursor: pointer;
-  transition: var(--transition);
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out;
   font-size: 0.85rem;
   font-weight: 500;
   white-space: nowrap;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-btn i {
@@ -117,14 +131,82 @@ body {
   background: var(--light);
   color: var(--primary);
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .nav-btn.active {
-  background: var(--primary);
+  background: var(--accent);
   color: var(--white);
   box-shadow: 0 2px 8px rgba(45, 90, 39, 0.25);
 }
 
+.nav-btn::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 50%;
+  bottom: calc(-100% - 10px);
+  transform: translateX(-50%) translateY(-6px);
+  background: var(--tooltip-bg);
+  color: var(--tooltip-color);
+  padding: var(--tooltip-padding);
+  border-radius: var(--tooltip-radius);
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  transform-origin: center bottom;
+  backdrop-filter: blur(6px);
+  z-index: 999;
+}
+
+.nav-btn::before {
+  /* small arrow */
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(-50%);
+  transform: translateX(-50%) translateY(-100%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid var(--tooltip-bg);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+/* show on hover or keyboard focus */
+.nav-btn:hover::after,
+.nav-btn:focus-visible::after,
+.nav-btn:hover::before,
+.nav-btn:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-100);
+}
+
+/* accessibility focus styles */
+.nav-btn:focus {
+  outline: none;
+}
+.nav-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  border-radius: 6px;
+}
+
+/* reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .nav-btn::after,
+  .nav-btn::before {
+    transition: none;
+    transform: translateX(-50%) translateY(-100%);
+  }
+}
 /* Main Content */
 .main {
   padding: 2rem 0;
@@ -227,6 +309,7 @@ body {
   font-size: 3rem;
   margin-bottom: 1rem;
   position: relative;
+  color: #ffffff;
 }
 
 .about-hero-content p {
@@ -234,6 +317,7 @@ body {
   max-width: 600px;
   margin: 0 auto 2rem;
   opacity: 0.9;
+  color: #ffffff;
 }
 
 .hero-stats {
@@ -252,11 +336,13 @@ body {
   font-size: 2.5rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
+  color: #ffffff;
 }
 
 .stat-label {
   font-size: 0.9rem;
   opacity: 0.8;
+  color: #ffffff;
 }
 
 /* About Sections */
@@ -436,7 +522,7 @@ body {
 .feature-badge {
   display: inline-block;
   background: var(--accent);
-  color: var(--white);
+  color: var(--text-light);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
@@ -584,6 +670,11 @@ body {
   color: var(--accent);
 }
 
+.footer-section p {
+  color: #ffffff;
+  line-height: 1.6;
+}
+
 .footer-section ul {
   list-style: none;
 }
@@ -593,7 +684,7 @@ body {
 }
 
 .footer-section a {
-  color: var(--light);
+  color: #ffffff;
   text-decoration: none;
   transition: var(--transition);
 }
@@ -607,6 +698,10 @@ body {
   align-items: center;
   gap: 10px;
   margin-bottom: 1rem;
+}
+
+.footer-logo h3 {
+  color: #ffffff;
 }
 
 .footer-logo i {
@@ -629,6 +724,7 @@ body {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   transition: var(--transition);
+  color: #ffffff;
 }
 
 .social-links a:hover {
@@ -640,10 +736,28 @@ body {
   text-align: center;
   padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .footer-bottom i {
   color: #e74c3c;
+}
+
+/* Dark mode footer text override */
+[data-theme="dark"] .footer {
+  color: var(--white);
+}
+
+[data-theme="dark"] .footer-section p,
+[data-theme="dark"] .footer-section a,
+[data-theme="dark"] .footer-logo h3,
+[data-theme="dark"] .footer-bottom,
+[data-theme="dark"] .social-links a {
+  color: var(--white);
+}
+
+[data-theme="dark"] .footer-section a:hover {
+  color: #ffffff;
 }
 
 /* Beautiful Growing Plant Animation */
@@ -1315,7 +1429,8 @@ body {
   opacity: 0;
   transform: translateY(8px) scale(0.95);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease,
+    background-color 0.2s ease;
   pointer-events: none;
 }
 
@@ -1331,4 +1446,34 @@ body {
   background-color: var(--accent);
   transform: translateY(-2px) scale(1.02);
 }
+select {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: 2px solid #bdc3c7;
+  border-radius: 8px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #ecf0f1;
+  color: #2e7d32;
+  box-shadow: 0 2px 4px rgba(44, 62, 80, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
 
+select:hover {
+  border-color: #95a5a6;
+  box-shadow: 0 4px 8px rgba(44, 62, 80, 0.15);
+}
+
+select:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.add-new-plant {
+  color: var(--accent)
+}

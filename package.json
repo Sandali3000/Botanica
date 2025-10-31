@@ -1,0 +1,26 @@
+{
+  "name": "botanica",
+  "version": "1.0.0",
+  "description": "Static web application for plant enthusiasts to collect, organize, and track their plant journey.  \r No backend — everything runs in your browser!",
+  "main": "index.js",
+  "scripts": {
+    "dev": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prachi0306/Botanica.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Prachi0306/Botanica/issues"
+  },
+  "homepage": "https://github.com/Prachi0306/Botanica#readme",
+  "devDependencies": {
+    "lite-server": "^2.6.1",
+    "live-server": "^1.2.2"
+  }
+}

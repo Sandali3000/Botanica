@@ -4,11 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="assets/icons/leaf.png" type="image/png" />
-    <title>Botanical | Open Source Plant Collection</title>
+    <title>Botanica | Open Source Plant Collection</title>
+    
+    <!-- 🤖 Botanica Chatbot Configuration -->
+    <script>
+      window.BOTANICA_CONFIG = {
+        // Get your Gemini API key from: https://aistudio.google.com/app/apikey
+        GEMINI_API_KEY: 'your_gemini_api_key_here',
+        DEBUG_MODE: false,
+        MAX_MESSAGES_HISTORY: 20,
+        AUTO_FOCUS_INPUT: true,
+      };
+    </script>
+    
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/components.css" />
     <link rel="stylesheet" href="styles/responsive.css" />
     <link rel="stylesheet" href="styles/calendar.css" />
+    <link rel="stylesheet" href="styles/dark-theme.css" />
+    <link rel="stylesheet" href="styles/theme-button.css" />
+    <link rel="stylesheet" href="styles/chatbot.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -16,6 +31,7 @@
   </head>
   <body>
     <header class="header">
+      <!-- Watering Notifications -->
       <div class="container">
         <div class="logo">
           <i class="fas fa-seedling"></i>
@@ -23,28 +39,27 @@
           <span class="badge">Nature Lovers</span>
         </div>
         <nav class="nav">
-          <button class="nav-btn active" data-page="dashboard">
+          <button title="dashboard" class="nav-btn active" data-page="dashboard">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
           </button>
-          <button class="nav-btn" data-page="collection">
+          <button title="My Plants" class="nav-btn" data-page="collection">
             <i class="fas fa-leaf"></i>
             <span>My Plants</span>
           </button>
-          <button class="nav-btn" data-page="wishlist">
+          <button title="Wishlist" class="nav-btn" data-page="wishlist">
             <i class="fas fa-heart"></i>
             <span>Wishlist</span>
           </button>
-           <button class="nav-btn" data-page="locations"><i class="fas fa-map-marker-alt"></i> Locations</button>
-          <button class="nav-btn" data-page="add-plant">
+          <button title="Add Plant" class="nav-btn" data-page="add-plant">
             <i class="fas fa-plus"></i>
             <span>Add Plant</span>
           </button>
-          <button class="nav-btn" data-page="discover">
+          <button title="Discover" class="nav-btn" data-page="discover">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
           </button>
-          <button class="nav-btn" data-page="calendar">
+          <button title="Care Calendar" class="nav-btn" data-page="calendar">
             <i class="fas fa-calendar-alt"></i>
             <span>Care Calendar</span>
           </button>
@@ -53,13 +68,14 @@
             <i class="fas fa-info-circle"></i>
             <span>About</span>
           </button>
-          <button class="nav-btn" id="theme-toggle">
+          <button title="Dark Mode" onclick="handleThemeToggle()" class="nav-btn theme-toggle" style="cursor:pointer !important;">
             <i class="fas fa-moon"></i>
             <span>Dark Mode</span>
           </button>
         </nav>
       </div>
     </header>
+    <div id="watering-notifications" style="display: none;"></div>
 
     <main class="main">
       <div class="container">
@@ -67,6 +83,11 @@
           <div class="hero">
             <h2>Welcome to Your Digital Garden</h2>
             <p>Collect, organize, and track your plant journey</p>
+            <p>
+              "A garden is a grand teacher. It teaches patience and careful
+              watchfulness; it teaches industry and thrift; above all it teaches
+              entire trust."
+            </p>
             <div class="stats-grid">
               <div class="stat-card">
                 <i class="fas fa-leaf"></i>
@@ -75,7 +96,7 @@
               </div>
               <div class="stat-card">
                 <i class="fas fa-tint"></i>
-                <h3 id="needs-water">0</h3>
+                <h3 id="needs-water" class="needs-water-count">0</h3>
                 <p>Need Water</p>
               </div>
               <div class="stat-card">
@@ -86,15 +107,15 @@
             </div>
           </div>
 
-          <div class="recent-plants">
-            <h3>Recently Added</h3>
-            <div id="recent-plants-grid" class="plants-grid"></div>
-          </div>
         </div>
 
         <div id="collection" class="page">
           <div class="page-header">
             <h2>My Plant Collection</h2>
+            <p>
+              "Every plant was once a small seed or cutting. Your collection
+              starts with just one. Happy growing!"
+            </p>
             <div class="filter-controls">
               <select id="filter-type">
                 <option value="all">All Plants</option>
@@ -103,6 +124,33 @@
                 <option value="succulent">Succulent</option>
                 <option value="herb">Herb</option>
                 <option value="flowering">Flowering</option>
+              </select>
+              <label for="filter-light" class="sr-only"
+                >Filter by light requirement</label
+              >
+              <select id="filter-light">
+                <option value="all">All Light</option>
+                <option value="low">Low Light</option>
+                <option value="medium">Medium Light</option>
+                <option value="bright">Bright Light</option>
+              </select>
+              <label for="filter-watering" class="sr-only"
+                >Filter by watering frequency</label
+              >
+              <select id="filter-watering">
+                <option value="all">All Watering</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+              <label for="filter-difficulty" class="sr-only"
+                >Filter by difficulty</label
+              >
+              <select id="filter-difficulty">
+                <option value="all">All Difficulty</option>
+                <option value="easy">Easy</option>
+                <option value="moderate">Moderate</option>
+                <option value="hard">Hard</option>
               </select>
               <select id="sort-plants">
                 <option value="name">Sort by Name (A-Z)</option>
@@ -186,10 +234,14 @@
         <div id="add-plant" class="page">
           <div class="page-header">
             <h2>Add New Plant</h2>
+            <p>
+              Ready to welcome a new green friend? 🌱 Every plant brings joy and
+              life to your space!
+            </p>
           </div>
           <form id="plant-form" class="plant-form">
             <div class="form-group">
-              <label for="plant-image">Plant Image</label>
+              <label class="add-new-plant" for="plant-image">Plant Image</label>
               <div class="image-upload">
                 <div class="upload-area" id="upload-area">
                   <i class="fas fa-camera"></i>
@@ -206,18 +258,18 @@
             </div>
 
             <div class="form-group">
-              <label for="plant-name">Plant Name *</label>
+              <label class="add-new-plant" for="plant-name">Plant Name *</label>
               <input type="text" id="plant-name" required />
             </div>
 
             <div class="form-group">
-              <label for="plant-species">Species</label>
+              <label class="add-new-plant" for="plant-species">Species</label>
               <input type="text" id="plant-species" />
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label for="plant-type">Plant Type</label>
+                <label class="add-new-plant" for="plant-type">Plant Type</label>
                 <select id="plant-type">
                   <option value="indoor">Indoor</option>
                   <option value="outdoor">Outdoor</option>
@@ -227,7 +279,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="light-requirement">Light Requirement</label>
+                <label class="add-new-plant" for="light-requirement">Light Requirement</label>
                 <select id="light-requirement">
                   <option value="low">Low Light</option>
                   <option value="medium">Medium Light</option>
@@ -236,8 +288,28 @@
               </div>
             </div>
 
+            <div class="form-row">
+              <div class="form-group">
+                <label class="add-new-plant" for="watering-frequency">Watering Frequency</label>
+                <select id="watering-frequency">
+                  <option value="weekly">Weekly</option>
+                  <option value="daily">Daily</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="add-new-plant" for="difficulty">Difficulty</label>
+                <select id="difficulty">
+                  <option value="easy">Easy</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="hard">Hard</option>
+                </select>
+              </div>
+              +
+            </div>
+
             <div class="form-group">
-              <label for="plant-notes">Care Notes</label>
+              <label class="add-new-plant" for="plant-notes">Care Notes</label>
               <textarea
                 id="plant-notes"
                 rows="4"
@@ -245,13 +317,36 @@
               ></textarea>
             </div>
 
+            <div class="watering-schedule-form">
+              <h3 style="color: var(--primary); margin-bottom: 16px;">💧 Watering Schedule</h3>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="watering-frequency">Watering Frequency (days)</label>
+                  <input type="number" id="watering-frequency" min="1" max="365" value="7" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="reminder-time">Reminder Time</label>
+                  <input type="time" id="reminder-time" value="09:00" />
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="last-watered">Last Watered Date</label>
+                <input type="date" id="last-watered" />
+              </div>
+            </div>
+
             <div class="form-actions">
               <button type="button" id="cancel-btn" class="btn-secondary">
                 Cancel
               </button>
               <button type="submit" class="btn-primary">
-                <i class="fas fa-plus"></i>
-                Add to Collection
+                <i class="fas fa-plus add-new-plant"></i>
+                <div class="add-new-plant">
+                  Add to Collection
+                </div>
               </button>
             </div>
           </form>
@@ -453,58 +548,34 @@
           </div>
         </div>
 
-        <div id="calendar" class="page">
-          <div class="page-header">
-            <h2>Plant Care Calendar</h2>
-            <p>Track and manage your plant care schedules</p>
-          </div>
-          <div class="calendar-controls">
-            <div class="calendar-nav">
-              <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
-              <h3 id="current-month">October 2025</h3>
-              <button id="next-month" class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
-            </div>
-            <button id="add-reminder" class="btn-primary">
-              <i class="fas fa-plus"></i> Add Reminder
-            </button>
-          </div>
-          <div class="calendar-grid" id="calendar-grid"></div>
-          <div class="reminders-list">
-            <h3>Upcoming Care Tasks</h3>
-            <div id="upcoming-reminders"></div>
-          </div>
-        </div>
+
 
         <div id="calendar" class="page">
-          <div class="page-header">
-            <h2>Plant Care Calendar</h2>
-            <p>Track and manage your plant care schedules</p>
-          </div>
-          <div class="calendar-controls">
-            <div class="calendar-nav">
-              <button id="prev-month" class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
-              <h3 id="current-month">October 2025</h3>
-              <button id="next-month" class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
-            </div>
-            <button id="add-reminder" class="btn-primary">
-              <i class="fas fa-plus"></i> Add Reminder
-            </button>
-          </div>
-          <div class="calendar-header">
-            <span>Sun</span>
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-          </div>
-          <div class="calendar-grid" id="calendar-grid"></div>
-          <div class="reminders-list">
-            <h3>Upcoming Care Tasks</h3>
-            <div id="upcoming-reminders"></div>
-          </div>
-        </div>
+  <div class="page-header">
+    <h2>🌿 Care Calendar</h2>
+  </div>
+
+  <div class="calendar-controls">
+    <div class="calendar-nav">
+      <button id="prev-month">◀</button>
+      <h3 id="current-month"></h3>
+      <button id="next-month">▶</button>
+    </div>
+    <button id="add-reminder" class="btn-primary">+ Add Reminder</button>
+  </div>
+
+  <div class="calendar-header">
+    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+    <span>Thu</span><span>Fri</span><span>Sat</span>
+  </div>
+
+  <div class="calendar-grid" id="calendar-grid"></div>
+
+  <div class="reminders-list">
+    <h3>Upcoming Care Tasks</h3>
+    <div id="upcoming-reminders"></div>
+  </div>
+</div>
 
         <div id="discover" class="page">
           <div class="page-header">
@@ -540,6 +611,92 @@
             </div>
           </div>
         </div>
+
+        <div id="help-center" class="page">
+          <div class="page-header">
+            <h2>Help Center</h2>
+            <p>Find answers to common questions.</p>
+          </div>
+          <div class="about-content">
+            <div class="about-section">
+              <h3>How to Add a Plant?</h3>
+              <p>
+                Click the "Add Plant" button in the navigation bar. Fill out the
+                form with your plant's details and upload an image. Click "Add
+                to Collection" to save it.
+              </p>
+              <h3>How Does Storage Work?</h3>
+              <p>
+                This application uses your browser's Local Storage. This means
+                all your plant data is stored directly on your computer. No data
+                is sent to any server. If you clear your browser's cache or
+                data, your plant collection will be erased.
+              </p>
+              <h3>How to Delete a Plant?</h3>
+              <p>
+                Go to the "My Plants" page, click on the plant you want to
+                delete. In the details modal, scroll down and click the "Delete
+                Plant" button.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="privacy-policy" class="page">
+          <div class="page-header">
+            <h2>Privacy Policy</h2>
+            <p>Your data is your own.</p>
+          </div>
+          <div class="about-content">
+            <div class="about-section">
+              <h3>Data Collection</h3>
+              <p>
+                Botanica is a static application that runs entirely in your web
+                browser. We do not collect, store, transmit, or process any of
+                your personal data on any external servers. All information you
+                enter, including plant names, notes, and uploaded images, is
+                stored locally in your browser's "Local Storage".
+              </p>
+              <h3>Data Security</h3>
+              <p>
+                Your data's security is dependent on the security of your own
+                computer and web browser. We have no access to it. If you use a
+                shared computer, be aware that other users of that computer may
+                _ be able to access your data.
+              </p>
+              <h3>Data Deletion</h3>
+              <p>
+                You can delete your data at any time by (a) deleting individual
+                plants within the app, or (b) clearing your browser's "Local
+                Storage" for this website.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="terms-of-service" class="page">
+          <div class="page-header">
+            <h2>Terms of Service</h2>
+            <p>Please read these terms carefully.</p>
+          </div>
+          <div class="about-content">
+            <div class="about-section">
+              <h3>Use of Service</h3>
+              <p>
+                This application is provided "as is" for personal,
+                non-commercial use. You are responsible for any data you enter
+                and for backing up your own data.
+              </p>
+              <h3>Limitation of Liability</h3>
+              <p>
+                The developers of Botanica are not responsible for any loss of
+                data or any other damages that may occur from the use of this
+                application. By using this app, you agree that you are doing so
+                at your own risk.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -552,6 +709,56 @@
       </div>
     </div>
 
+    <div id="contact-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="close-contact-modal" class="modal-close">
+          <i class="fas fa-times"></i>
+        </button>
+        <div class="plant-detail">
+          <form id="contact-form" class="plant-form">
+            <h2 style="text-align: center; color: var(--primary)">
+              Contact Us
+            </h2>
+            <p
+              style="
+                text-align: center;
+                color: var(--text-light);
+                margin-bottom: 2rem;
+              "
+            >
+              Have a question or feedback? Let us know!
+            </p>
+
+            <div class="form-group">
+              <label for="contact-name">Your Name</label>
+              <input type="text" id="contact-name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-email">Your Email</label>
+              <input type="email" id="contact-email" required />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message">Message</label>
+              <textarea
+                id="contact-message"
+                rows="5"
+                required
+                placeholder="Your message..."
+              ></textarea>
+            </div>
+
+            <div class="form-actions" style="margin-top: 1rem">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-paper-plane"></i>
+                Send Message
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
@@ -574,7 +781,11 @@
               <a href="#" aria-label="Instagram"
                 ><i class="fab fa-instagram"></i
               ></a>
-              <a href="https://github.com/Sandali3000/Botanica" aria-label="GitHub"><i class="fab fa-github"></i></a>
+              <a
+                href="https://github.com/Sandali3000/Botanica"
+                aria-label="GitHub"
+                ><i class="fab fa-github"></i
+              ></a>
             </div>
           </div>
 
@@ -664,10 +875,33 @@
           <div class="footer-section">
             <h4>Support</h4>
             <ul>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="help-center"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a href="javascript:void(0)" id="contact-us-link">Contact Us</a>
+              </li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="privacy-policy"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li>
+                <a
+                  href="javascript:void(0)"
+                  class="footer-nav-link"
+                  data-page="terms-of-service"
+                  >Terms of Service</a
+                >
+              </li>
             </ul>
           </div>
         </div>
@@ -681,12 +915,66 @@
       </div>
     </footer>
 
+    <!-- Load CSS files -->
+    <link rel="stylesheet" href="styles/theme-button.css">
+    
+    <!-- Simple theme script -->
+    <script src="scripts/simple-theme.js"></script>
+    
+    <!-- Chatbot scripts (must load before app.js) -->
+    <script src="scripts/env-config.js"></script>
+    <script src="scripts/chatbot-context.js"></script>
+    <script src="scripts/chatbot-api.js"></script>
+    <script src="scripts/chatbot-widget.js"></script>
+    
+    <!-- App scripts -->
+    <script src="scripts/tooltip.js"></script>
     <script src="scripts/image-handler.js"></script>
     <script src="scripts/plant-manager.js"></script>
     <script src="scripts/wishlist-manager.js"></script>
     <script src="scripts/calendar-manager.js"></script>
+    <script src="scripts/audio-manager.js"></script>
+    <script src="scripts/search-manager.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/scroll_btn.js" defer></script>
+    
+    <script>
+      window.addEventListener('DOMContentLoaded', function() {
+        window.botanicalApp = new BotanicalApp();
+        window.searchManager = new SearchManager();
+      });
+    </script>
+
+    <script>
+      // Initialize watering system
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize plant manager
+        if (typeof plantManager !== 'undefined') {
+          plantManager.init();
+        }
+        
+        // Update dashboard stats every 5 seconds
+        setInterval(updateDashboardStats, 5000);
+      });
+
+      // Update dashboard statistics
+      function updateDashboardStats() {
+        if (typeof plantManager === 'undefined' || !plantManager.plants) return;
+        
+        const plants = plantManager.plants || [];
+        let needsWater = 0;
+        
+        plants.forEach(plant => {
+          const days = plantManager.getDaysUntilWatering(plant);
+          if (days !== null && days <= 0) needsWater++;
+        });
+        
+        const needsWaterEl = document.getElementById('needs-water');
+        if (needsWaterEl) {
+          needsWaterEl.textContent = needsWater;
+        }
+      }
+    </script>
 
     <div class="growing-plant">
       <div class="plant-pot"></div>
@@ -715,6 +1003,18 @@
     </div>
 
     <div class="falling-leaves" id="falling-leaves"></div>
+
+    <div class="search-wrapper">
+      <div class="search-container">
+        <input type="text" id="site-search" class="search-input" placeholder="Search..." aria-label="Search website content">
+        <button class="search-button">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div id="search-results" class="search-results-dropdown" style="display: none;">
+        <!-- Search results will be populated here -->
+      </div>
+    </div>
 
     <button onclick="topFunction()" id="scrollupBtn"><b>↑</b></button>
   </body>

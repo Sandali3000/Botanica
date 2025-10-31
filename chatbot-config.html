@@ -1,0 +1,23 @@
+<!-- 🤖 Botanica Chatbot Configuration -->
+
+<!-- Add this script BEFORE loading other scripts to configure the chatbot -->
+<script>
+  // Configure Botanica Chatbot
+  window.BOTANICA_CONFIG = {
+    // Get your Gemini API key from: https://aistudio.google.com/app/apikey
+    GEMINI_API_KEY: 'your_gemini_api_key_here',
+    
+    // Optional: Configure chatbot behavior
+    DEBUG_MODE: false,
+    MAX_MESSAGES_HISTORY: 20,
+    AUTO_FOCUS_INPUT: true,
+  };
+  
+  // Validate configuration on load
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!window.BOTANICA_CONFIG.GEMINI_API_KEY || 
+        window.BOTANICA_CONFIG.GEMINI_API_KEY === 'your_gemini_api_key_here') {
+      console.warn('⚠️ Botanica Chatbot: Gemini API key not configured. Please set BOTANICA_CONFIG.GEMINI_API_KEY');
+    }
+  });
+</script>

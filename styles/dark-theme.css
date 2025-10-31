@@ -1,0 +1,122 @@
+/* Dark theme overrides */
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #1a2634 0%, #243447 100%);
+}
+
+[data-theme="dark"] .header {
+    background: var(--white);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .nav-btn {
+    background: var(--light);
+    color: var(--text);
+}
+
+[data-theme="dark"] .nav-btn:hover {
+    background: var(--accent);
+    color: var(--text);
+}
+
+[data-theme="dark"] .nav-btn.active {
+    background: var(--primary);
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .plant-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .wish-card,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .plant-form,
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea {
+    background: var(--white);
+    color: var(--text);
+}
+
+[data-theme="dark"] .plant-type,
+[data-theme="dark"] .detail-type,
+[data-theme="dark"] .detail-light {
+    background: var(--light);
+    color: var(--text);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: var(--light);
+    color: var(--text);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: var(--accent);
+    color: var(--white);
+}
+
+[data-theme="dark"] .empty-state {
+    background: var(--white);
+}
+
+[data-theme="dark"] .empty-state h3 {
+    color: var(--text);
+}
+
+[data-theme="dark"] .empty-state p {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .upload-area {
+    background: var(--light);
+    border: 2px dashed var(--text-light);
+}
+
+[data-theme="dark"] .upload-area:hover {
+    background: var(--accent);
+    border-color: var(--primary);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--text);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea {
+    border-color: var(--light);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus,
+[data-theme="dark"] .form-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(166, 211, 136, 0.2);
+}
+
+[data-theme="dark"] .tab-btn {
+    background: var(--light);
+    color: var(--text);
+}
+
+[data-theme="dark"] .tab-btn.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+[data-theme="dark"] .journal-entry {
+    background: var(--white);
+    border-left: 5px solid var(--accent);
+}
+
+[data-theme="dark"] .journal-date {
+    color: var(--text-light);
+}
+
+[data-theme="dark"] .notification {
+    background: var(--white);
+    color: var(--text);
+}
+
+[data-theme="dark"] #scrollupBtn {
+    background-color: var(--accent);
+    color: var(--text);
+}
