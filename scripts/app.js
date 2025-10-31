@@ -22,9 +22,9 @@ class BotanicalApp {
 
   setDefaultWateringDate() {
     // Set default date for last-watered input when page loads
-    const lastWateredInput = document.getElementById('last-watered');
+    const lastWateredInput = document.getElementById("last-watered");
     if (lastWateredInput && !lastWateredInput.value) {
-      lastWateredInput.value = new Date().toISOString().split('T')[0];
+      lastWateredInput.value = new Date().toISOString().split("T")[0];
     }
   }
 
@@ -667,7 +667,7 @@ class BotanicalApp {
     const imageSrc = plant.image || "assets/images/demo_pic.png";
 
     // Get watering status if schedule exists
-    let wateringStatusHTML = '';
+    let wateringStatusHTML = "";
     if (plant.wateringSchedule && this.plantManager.getWateringStatus) {
       const status = this.plantManager.getWateringStatus(plant);
       wateringStatusHTML = `
@@ -689,8 +689,8 @@ class BotanicalApp {
                     ${
                       plant.species
                         ? `<p class="plant-species">${this.escapeHtml(
-                              plant.species
-                            )}</p>`
+                            plant.species
+                          )}</p>`
                         : ""
                     }
                     <div class="plant-meta">
@@ -706,39 +706,40 @@ class BotanicalApp {
                 </div>
             </div>
         `;
-      <div class="plant-card" data-plant-id="${plant.id}">
-        <img src="${imageSrc}" 
-          alt="${this.escapeHtml(plant.name)}" 
-          class="plant-image"
-          onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
-        <div class="plant-info">
-          <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
-          ${
-            plant.species
-              ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
-              : ""
-          }
-             <div class="plant-meta">
-            <span class="plant-type">${this.escapeHtml(plant.type)}</span>
-            <span class="plant-light">
-              <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
-              ${this.escapeHtml(plant.light)}
-            </span>
-          </div>
-          <div class="plant-badges">
-            <span class="badge small">Water: ${this.escapeHtml(
-              plant.wateringFrequency || "weekly"
-            )}</span>
-            <span class="badge small">${this.escapeHtml(
-              plant.difficulty
-                ? plant.difficulty.charAt(0).toUpperCase() +
-                    plant.difficulty.slice(1)
-                : "Easy"
-            )}</span>
-          </div>
-        </div>
-      </div>
-    `;
+        //bug code
+    //   <div class="plant-card" data-plant-id="${plant.id}">
+    //     <img src="${imageSrc}"
+    //       alt="${this.escapeHtml(plant.name)}"
+    //       class="plant-image"
+    //       onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+    //     <div class="plant-info">
+    //       <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
+    //       ${
+    //         plant.species
+    //           ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
+    //           : ""
+    //       }
+    //          <div class="plant-meta">
+    //         <span class="plant-type">${this.escapeHtml(plant.type)}</span>
+    //         <span class="plant-light">
+    //           <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
+    //           ${this.escapeHtml(plant.light)}
+    //         </span>
+    //       </div>
+    //       <div class="plant-badges">
+    //         <span class="badge small">Water: ${this.escapeHtml(
+    //           plant.wateringFrequency || "weekly"
+    //         )}</span>
+    //         <span class="badge small">${this.escapeHtml(
+    //           plant.difficulty
+    //             ? plant.difficulty.charAt(0).toUpperCase() +
+    //                 plant.difficulty.slice(1)
+    //             : "Easy"
+    //         )}</span>
+    //       </div>
+    //     </div>
+    //   </div>
+    // `;
   }
 
   async handlePlantSubmit() {
@@ -757,15 +758,18 @@ class BotanicalApp {
     }
 
     // Get watering schedule data
-    const wateringFrequency = document.getElementById('watering-frequency');
-    const lastWatered = document.getElementById('last-watered');
-    const reminderTime = document.getElementById('reminder-time');
-    
+    const wateringFrequency = document.getElementById("watering-frequency");
+    const lastWatered = document.getElementById("last-watered");
+    const reminderTime = document.getElementById("reminder-time");
+
     const wateringSchedule = {
       frequency: wateringFrequency ? parseInt(wateringFrequency.value) : 7,
-      lastWatered: lastWatered && lastWatered.value ? lastWatered.value : new Date().toISOString().split('T')[0],
-      reminderTime: reminderTime ? reminderTime.value : '09:00',
-      notes: ''
+      lastWatered:
+        lastWatered && lastWatered.value
+          ? lastWatered.value
+          : new Date().toISOString().split("T")[0],
+      reminderTime: reminderTime ? reminderTime.value : "09:00",
+      notes: "",
     };
 
     // Get form data
@@ -777,7 +781,7 @@ class BotanicalApp {
       notes: document.getElementById("plant-notes").value.trim(),
       image: this.imageHandler.getImageData(),
       createdAt: new Date().toISOString(),
-      wateringSchedule: wateringSchedule // ADD THIS LINE
+      wateringSchedule: wateringSchedule, // ADD THIS LINE
     };
 
     try {
@@ -785,7 +789,10 @@ class BotanicalApp {
       this.plantManager.addPlant(plantData);
 
       // Show success message
-      this.showNotification("🌱 Plant added with watering schedule!", "success");
+      this.showNotification(
+        "🌱 Plant added with watering schedule!",
+        "success"
+      );
 
       // Reset form and return to collection
       this.imageHandler.clearImage();
