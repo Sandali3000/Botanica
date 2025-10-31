@@ -114,6 +114,14 @@ class PlantManager {
     return this.plants.find((plant) => plant.id == id);
   }
 
+  // returns if a plant name already exists
+  hasPlantName(name) {
+    const sanitizedName = `${name}`.trim().toLowerCase();
+    return this.plants.find(
+      (plant) => plant.name.trim().toLowerCase() === sanitizedName
+    );
+  }
+
   // Set filter
   setFilter(filter) {
     this.currentFilter = filter;
