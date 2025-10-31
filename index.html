@@ -227,7 +227,7 @@
           </div>
           <form id="plant-form" class="plant-form">
             <div class="form-group">
-              <label for="plant-image">Plant Image</label>
+              <label class="add-new-plant" for="plant-image">Plant Image</label>
               <div class="image-upload">
                 <div class="upload-area" id="upload-area">
                   <i class="fas fa-camera"></i>
@@ -244,18 +244,18 @@
             </div>
 
             <div class="form-group">
-              <label for="plant-name">Plant Name *</label>
+              <label class="add-new-plant" for="plant-name">Plant Name *</label>
               <input type="text" id="plant-name" required />
             </div>
 
             <div class="form-group">
-              <label for="plant-species">Species</label>
+              <label class="add-new-plant" for="plant-species">Species</label>
               <input type="text" id="plant-species" />
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label for="plant-type">Plant Type</label>
+                <label class="add-new-plant" for="plant-type">Plant Type</label>
                 <select id="plant-type">
                   <option value="indoor">Indoor</option>
                   <option value="outdoor">Outdoor</option>
@@ -265,7 +265,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="light-requirement">Light Requirement</label>
+                <label class="add-new-plant" for="light-requirement">Light Requirement</label>
                 <select id="light-requirement">
                   <option value="low">Low Light</option>
                   <option value="medium">Medium Light</option>
@@ -276,7 +276,7 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="watering-frequency">Watering Frequency</label>
+                <label class="add-new-plant" for="watering-frequency">Watering Frequency</label>
                 <select id="watering-frequency">
                   <option value="weekly">Weekly</option>
                   <option value="daily">Daily</option>
@@ -284,7 +284,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="difficulty">Difficulty</label>
+                <label class="add-new-plant" for="difficulty">Difficulty</label>
                 <select id="difficulty">
                   <option value="easy">Easy</option>
                   <option value="moderate">Moderate</option>
@@ -295,7 +295,7 @@
             </div>
 
             <div class="form-group">
-              <label for="plant-notes">Care Notes</label>
+              <label class="add-new-plant" for="plant-notes">Care Notes</label>
               <textarea
                 id="plant-notes"
                 rows="4"
@@ -308,8 +308,10 @@
                 Cancel
               </button>
               <button type="submit" class="btn-primary">
-                <i class="fas fa-plus"></i>
-                Add to Collection
+                <i class="fas fa-plus add-new-plant"></i>
+                <div class="add-new-plant">
+                  Add to Collection
+                </div>
               </button>
             </div>
           </form>
