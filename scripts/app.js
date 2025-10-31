@@ -538,6 +538,7 @@ class BotanicalApp {
                 </div>
             </div>
         `;
+        //bug code
     //   <div class="plant-card" data-plant-id="${plant.id}">
     //     <img src="${imageSrc}"
     //       alt="${this.escapeHtml(plant.name)}"
