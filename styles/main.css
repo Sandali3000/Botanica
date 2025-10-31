@@ -121,7 +121,7 @@ body {
 }
 
 .nav-btn.active {
-  background: var(--primary);
+  background: var(--accent);
   color: var(--white);
   box-shadow: 0 2px 8px rgba(45, 90, 39, 0.25);
 }
