@@ -77,6 +77,7 @@ class PlantManager {
     localStorage.setItem("botanica_reminders", JSON.stringify(this.reminders));
   }
 
+  
   // Add plant
   addPlant(plantData) {
     const plant = {

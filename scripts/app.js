@@ -4,10 +4,10 @@ class BotanicalApp {
     this.wishlistManager = new WishlistManager();
     this.imageHandler = new ImageHandler();
     this.currentPage = "dashboard";
-    
+
     // Make app instance globally available for search
     window.app = this;
-    
+
     this.init();
   }
 
@@ -28,30 +28,38 @@ class BotanicalApp {
     }
   }
 
-
   initializeSearch() {
-    this.searchInput = document.getElementById('site-search');
-    this.searchResults = document.getElementById('search-results');
-    this.searchButton = document.querySelector('.search-button');
+    this.searchInput = document.getElementById("site-search");
+    this.searchResults = document.getElementById("search-results");
+    this.searchButton = document.querySelector(".search-button");
 
     // Add event listeners
-    this.searchInput.addEventListener('input', this.debounce(() => this.handleSearch(), 300));
-    this.searchButton.addEventListener('click', () => this.handleSearch());
-    
+    this.searchInput.addEventListener(
+      "input",
+      this.debounce(() => this.handleSearch(), 300)
+    );
+    this.searchButton.addEventListener("click", () => this.handleSearch());
+
     // Close search results when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!this.searchInput.contains(e.target) && !this.searchResults.contains(e.target)) {
-        this.searchResults.style.display = 'none';
+    document.addEventListener("click", (e) => {
+      if (
+        !this.searchInput.contains(e.target) &&
+        !this.searchResults.contains(e.target)
+      ) {
+        this.searchResults.style.display = "none";
       }
     });
 
     // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== this.searchInput) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "/" && document.activeElement !== this.searchInput) {
         e.preventDefault();
         this.searchInput.focus();
-      } else if (e.key === 'Escape' && this.searchResults.style.display !== 'none') {
-        this.searchResults.style.display = 'none';
+      } else if (
+        e.key === "Escape" &&
+        this.searchResults.style.display !== "none"
+      ) {
+        this.searchResults.style.display = "none";
       }
     });
   }
@@ -71,7 +79,7 @@ class BotanicalApp {
   handleSearch() {
     const query = this.searchInput.value.trim().toLowerCase();
     if (query.length === 0) {
-      this.searchResults.style.display = 'none';
+      this.searchResults.style.display = "none";
       return;
     }
 
@@ -81,53 +89,57 @@ class BotanicalApp {
 
   searchContent(query) {
     const results = [];
-    
+
     // Search plants in collection
     const plants = this.plantManager.getAllPlants();
-    plants.forEach(plant => {
-      if (this.matchesSearch(plant.name, query) || 
-          this.matchesSearch(plant.species, query) || 
-          this.matchesSearch(plant.description, query)) {
+    plants.forEach((plant) => {
+      if (
+        this.matchesSearch(plant.name, query) ||
+        this.matchesSearch(plant.species, query) ||
+        this.matchesSearch(plant.description, query)
+      ) {
         results.push({
           title: plant.name,
-          category: 'My Plants',
-          type: 'plant',
-          data: plant
+          category: "My Plants",
+          type: "plant",
+          data: plant,
         });
       }
     });
 
     // Search wishlist items
     const wishlist = this.wishlistManager.getWishlist();
-    wishlist.forEach(item => {
-      if (this.matchesSearch(item.name, query) || 
-          this.matchesSearch(item.notes, query)) {
+    wishlist.forEach((item) => {
+      if (
+        this.matchesSearch(item.name, query) ||
+        this.matchesSearch(item.notes, query)
+      ) {
         results.push({
           title: item.name,
-          category: 'Wishlist',
-          type: 'wishlist',
-          data: item
+          category: "Wishlist",
+          type: "wishlist",
+          data: item,
         });
       }
     });
 
     // Search navigation items
     const navItems = [
-      { name: 'Dashboard', page: 'dashboard' },
-      { name: 'My Plants', page: 'collection' },
-      { name: 'Wishlist', page: 'wishlist' },
-      { name: 'Add Plant', page: 'add-plant' },
-      { name: 'Discover', page: 'discover' },
-      { name: 'Calendar', page: 'calendar' }
+      { name: "Dashboard", page: "dashboard" },
+      { name: "My Plants", page: "collection" },
+      { name: "Wishlist", page: "wishlist" },
+      { name: "Add Plant", page: "add-plant" },
+      { name: "Discover", page: "discover" },
+      { name: "Calendar", page: "calendar" },
     ];
 
-    navItems.forEach(item => {
+    navItems.forEach((item) => {
       if (this.matchesSearch(item.name, query)) {
         results.push({
           title: item.name,
-          category: 'Navigation',
-          type: 'page',
-          data: item.page
+          category: "Navigation",
+          type: "page",
+          data: item.page,
         });
       }
     });
@@ -141,32 +153,39 @@ class BotanicalApp {
 
   displaySearchResults(results, query) {
     if (results.length === 0) {
-      this.searchResults.innerHTML = '<div class="search-result-item"><div class="search-result-title">No results found</div></div>';
-      this.searchResults.style.display = 'block';
+      this.searchResults.innerHTML =
+        '<div class="search-result-item"><div class="search-result-title">No results found</div></div>';
+      this.searchResults.style.display = "block";
       return;
     }
 
-    const html = results.map(result => {
-      const highlightedTitle = this.highlightText(result.title, query);
-      return `
-        <div class="search-result-item" data-type="${result.type}" data-id="${result.type === 'page' ? result.data : result.data.id}">
+    const html = results
+      .map((result) => {
+        const highlightedTitle = this.highlightText(result.title, query);
+        return `
+        <div class="search-result-item" data-type="${result.type}" data-id="${
+          result.type === "page" ? result.data : result.data.id
+        }">
           <div class="search-result-title">${highlightedTitle}</div>
           <div class="search-result-category">${result.category}</div>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
 
     this.searchResults.innerHTML = html;
-    this.searchResults.style.display = 'block';
+    this.searchResults.style.display = "block";
 
     // Add click handlers to results
-    this.searchResults.querySelectorAll('.search-result-item').forEach(item => {
-      item.addEventListener('click', () => this.handleResultClick(item));
-    });
+    this.searchResults
+      .querySelectorAll(".search-result-item")
+      .forEach((item) => {
+        item.addEventListener("click", () => this.handleResultClick(item));
+      });
   }
 
   highlightText(text, query) {
-    const regex = new RegExp(`(${query})`, 'gi');
+    const regex = new RegExp(`(${query})`, "gi");
     return text.replace(regex, '<span class="search-highlight">$1</span>');
   }
 
@@ -175,22 +194,22 @@ class BotanicalApp {
     const id = resultElement.dataset.id;
 
     switch (type) {
-      case 'page':
+      case "page":
         this.showPage(id);
         break;
-      case 'plant':
-        this.showPage('collection');
+      case "plant":
+        this.showPage("collection");
         // TODO: Scroll to and highlight the specific plant
         break;
-      case 'wishlist':
-        this.showPage('wishlist');
+      case "wishlist":
+        this.showPage("wishlist");
         // TODO: Scroll to and highlight the specific wishlist item
         break;
     }
 
     // Clear search
-    this.searchInput.value = '';
-    this.searchResults.style.display = 'none';
+    this.searchInput.value = "";
+    this.searchResults.style.display = "none";
   }
 
   createFallingLeaves() {
@@ -706,7 +725,7 @@ class BotanicalApp {
                 </div>
             </div>
         `;
-        //bug code
+    //bug code
     //   <div class="plant-card" data-plant-id="${plant.id}">
     //     <img src="${imageSrc}"
     //       alt="${this.escapeHtml(plant.name)}"
@@ -742,6 +761,36 @@ class BotanicalApp {
     // `;
   }
 
+  resetPlantForm() {
+    const byId = (id) => document.getElementById(id);
+    const name = byId("plant-name");
+    const species = byId("plant-species");
+    const type = byId("plant-type");
+    const light = byId("light-requirement");
+    const notes = byId("plant-notes");
+    const frequency = byId("watering-schedule-frequency");
+    const lastWatered = byId("last-watered");
+    const reminder = byId("reminder-time");
+
+    if (name) name.value = "";
+    if (species) species.value = "";
+    if (type) type.selectedIndex = 0;
+    if (light) light.selectedIndex = 0;
+    if (notes) notes.value = "";
+    if (frequency) frequency.value = "";
+    if (lastWatered) lastWatered.value = new Date().toISOString().split("T")[0];
+    if (reminder) reminder.value = "09:00";
+
+    // image handler clear
+    // if (this.imageHandler) {
+    //   this.imageHandler.clearImage();
+    // }
+
+    // ensure any other UI state is reset
+    // const form = byId("plant-form");
+    // if (form) form.classList.remove("was-validated");
+  }
+  
   async handlePlantSubmit() {
     // Validate image
     const imageValidation = this.imageHandler.validateImage();
@@ -758,21 +807,23 @@ class BotanicalApp {
     }
 
     // Get watering schedule data
-    const wateringFrequency = document.getElementById("watering-frequency");
+    const wateringFrequency = document.getElementById(
+      "watering-schedule-frequency"
+    );
     const lastWatered = document.getElementById("last-watered");
     const reminderTime = document.getElementById("reminder-time");
 
     const wateringSchedule = {
-      frequency: wateringFrequency ? parseInt(wateringFrequency.value) : 7,
-      lastWatered:
-        lastWatered && lastWatered.value
-          ? lastWatered.value
-          : new Date().toISOString().split("T")[0],
+      frequency: wateringFrequency?.value
+        ? parseInt(wateringFrequency.value)
+        : 7,
+      lastWatered: lastWatered?.value
+        ? lastWatered.value
+        : new Date().toISOString().split("T")[0],
       reminderTime: reminderTime ? reminderTime.value : "09:00",
       notes: "",
     };
 
-    // Get form data
     const plantData = {
       name: plantName.value.trim(),
       species: document.getElementById("plant-species").value.trim(),
@@ -796,7 +847,8 @@ class BotanicalApp {
 
       // Reset form and return to collection
       this.imageHandler.clearImage();
-      document.getElementById("plant-form").reset();
+      // document.getElementById("plant-form").reset();
+      // this.resetPlantForm();
       this.showPage("collection");
 
       // Update dashboard stats
