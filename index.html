@@ -974,12 +974,14 @@
     <script src="scripts/wishlist-manager.js"></script>
     <script src="scripts/calendar-manager.js"></script>
     <script src="scripts/audio-manager.js"></script>
+    <script src="scripts/search-manager.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/scroll_btn.js" defer></script>
     
     <script>
       window.addEventListener('DOMContentLoaded', function() {
         window.botanicalApp = new BotanicalApp();
+        window.searchManager = new SearchManager();
       });
     </script>
 
@@ -1041,6 +1043,18 @@
     </div>
 
     <div class="falling-leaves" id="falling-leaves"></div>
+
+    <div class="search-wrapper">
+      <div class="search-container">
+        <input type="text" id="site-search" class="search-input" placeholder="Search..." aria-label="Search website content">
+        <button class="search-button">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      <div id="search-results" class="search-results-dropdown" style="display: none;">
+        <!-- Search results will be populated here -->
+      </div>
+    </div>
 
     <button onclick="topFunction()" id="scrollupBtn"><b>↑</b></button>
   </body>
