@@ -1469,3 +1469,7 @@ select:focus {
   border-color: #4caf50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
+
+.add-new-plant {
+  color: var(--accent)
+}
