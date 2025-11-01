@@ -2,355 +2,216 @@
 // Replace your entire plant-manager.js file with this code
 
 class PlantManager {
-  constructor() {
-    this.plants = this.loadPlants();
-    this.wateringHistory = this.loadWateringHistory();
-    this.reminders = this.loadReminders();
-    this.checkRemindersInterval = null;
-    this.currentFilter = "all";
-    this.currentSearch = "";
-    this.currentLightFilter = "all";
-    this.currentWateringFilter = "all";
-    this.currentDifficultyFilter = "all";
-
-    // Ensure older stored plants get default fields
-    let migrated = false;
-    this.plants = this.plants.map((p) => {
-      const copy = { ...p };
-      if (!copy.wateringFrequency) {
-        copy.wateringFrequency = "weekly";
-        migrated = true;
-      }
-      if (!copy.difficulty) {
-        copy.difficulty = "easy";
-        migrated = true;
-      }
-      if (!copy.light) {
-        copy.light = "medium";
-        migrated = true;
-      }
-      return copy;
-    });
-    if (migrated) this.saveToStorage();
-  }
-
-  // Initialize the watering management system
-  init() {
-    this.startReminderChecker();
-    this.updateWateringIndicators();
-    this.renderWateringNotifications();
-  }
-
-  // Load plants from localStorage
-  loadPlants() {
-    const stored = localStorage.getItem("botanica_plants");
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  // Save plants to localStorage
-  savePlants() {
-    localStorage.setItem("botanica_plants", JSON.stringify(this.plants));
-  }
-
-  // Load watering history
-  loadWateringHistory() {
-    const stored = localStorage.getItem("botanica_watering_history");
-    return stored ? JSON.parse(stored) : {};
-  }
-
-  // Save watering history
-  saveWateringHistory() {
-    localStorage.setItem(
-      "botanica_watering_history",
-      JSON.stringify(this.wateringHistory)
-    );
-  }
-
-  // Load reminders
-  loadReminders() {
-    const stored = localStorage.getItem("botanica_reminders");
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  // Save reminders
-  saveReminders() {
-    localStorage.setItem("botanica_reminders", JSON.stringify(this.reminders));
-  }
-
-  // Add plant
-  addPlant(plantData) {
-    const plant = {
-      id: Date.now(),
-      ...plantData,
-      journal: plantData.journal || [],
-      healthLogs: plantData.healthLogs || [],
-    };
-
-    this.plants.push(plant);
-    this.savePlants();
-
-    // Create watering reminder if schedule exists
-    if (plant.wateringSchedule) {
-      this.createReminder(plant.id);
+    constructor() {
+        this.plants = this.loadPlants();
+        this.wateringHistory = this.loadWateringHistory();
+        this.reminders = this.loadReminders();
+        this.checkRemindersInterval = null;
+        this.currentFilter = 'all';
+        this.currentSearch = '';
     }
 
-    return plant;
-  }
-
-  // Delete plant
-  deletePlant(id) {
-    this.plants = this.plants.filter((plant) => plant.id !== id);
-    delete this.wateringHistory[id];
-    this.reminders = this.reminders.filter((r) => r.plantId !== id);
-
-    this.savePlants();
-    this.saveWateringHistory();
-    this.saveReminders();
-    this.saveToStorage();
-  }
-
-  // Get plant by ID
-  getPlantById(id) {
-    return this.plants.find((plant) => plant.id == id);
-  }
-
-  // Set filter
-  setFilter(filter) {
-    this.currentFilter = filter;
-  }
-
-  // Set search
-  setSearch(search) {
-    this.currentSearch = search;
-  }
-
-  // Get recent plants
-  getRecentPlants(limit = 6) {
-    return [...this.plants]
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .slice(0, limit);
-  }
-
-  // Add health log
-  addHealthLog(plantId, logData) {
-    const plant = this.plants.find((p) => p.id == plantId);
-    if (!plant) return false;
-
-    if (!plant.healthLogs) plant.healthLogs = [];
-
-    const log = {
-      id: Date.now(),
-      ...logData,
-    };
-
-    plant.healthLogs.unshift(log);
-    this.savePlants();
-    return log;
-  }
-
-  // Delete health log
-  deleteHealthLog(plantId, logId) {
-    const plant = this.plants.find((p) => p.id == plantId);
-    if (!plant || !plant.healthLogs) return false;
-
-    plant.healthLogs = plant.healthLogs.filter((l) => l.id != logId);
-    this.savePlants();
-    return true;
-  }
-
-  getHealthLogs(plantId) {
-    const plant = this.getPlantById(plantId);
-    return plant && plant.healthLogs ? plant.healthLogs : [];
-  }
-
-  //Convenience helpers
-  addWateringEvent(plantId, { date, notes }) {
-    return this.addHealthLog(plantId, { type: "watering", date, notes });
-  }
-
-  addFertilizerEvent(plantId, { date, notes }) {
-    return this.addHealthLog(plantId, { type: "fertilizer", date, notes });
-  }
-
-  addGrowthPhoto(plantId, { date, notes, image }) {
-    return this.addHealthLog(plantId, { type: "growth", date, notes, image });
-  }
-
-  addPestReport(plantId, { date, notes, image, details }) {
-    return this.addHealthLog(plantId, {
-      type: "pest",
-      date,
-      notes,
-      image,
-      details,
-    });
-  }
-
-  getPlants() {
-    let filteredPlants = this.plants;
-
-    // Apply type filter
-    if (this.currentFilter !== "all") {
-      filteredPlants = filteredPlants.filter(
-        (plant) => plant.type === this.currentFilter
-      );
+    // Initialize the watering management system
+    init() {
+        this.startReminderChecker();
+        this.updateWateringIndicators();
+        this.renderWateringNotifications();
     }
 
-    // Apply light filter
-    if (this.currentLightFilter && this.currentLightFilter !== "all") {
-      filteredPlants = filteredPlants.filter(
-        (plant) => plant.light === this.currentLightFilter
-      );
+    // Load plants from localStorage
+    loadPlants() {
+        const stored = localStorage.getItem('botanica_plants');
+        return stored ? JSON.parse(stored) : [];
     }
 
-    // Apply watering frequency filter
-    if (this.currentWateringFilter && this.currentWateringFilter !== "all") {
-      filteredPlants = filteredPlants.filter(
-        (plant) => plant.wateringFrequency === this.currentWateringFilter
-      );
+    // Save plants to localStorage
+    savePlants() {
+        localStorage.setItem('botanica_plants', JSON.stringify(this.plants));
     }
 
-    // Apply difficulty filter
-    if (
-      this.currentDifficultyFilter &&
-      this.currentDifficultyFilter !== "all"
-    ) {
-      filteredPlants = filteredPlants.filter(
-        (plant) => plant.difficulty === this.currentDifficultyFilter
-      );
+    // Load watering history
+    loadWateringHistory() {
+        const stored = localStorage.getItem('botanica_watering_history');
+        return stored ? JSON.parse(stored) : {};
     }
 
-    // Apply search filter
-    if (this.currentSearch) {
-      const searchTerm = this.currentSearch.toLowerCase();
-      filteredPlants = filteredPlants.filter(
-        (plant) =>
-          plant.name.toLowerCase().includes(searchTerm) ||
-          (plant.species && plant.species.toLowerCase().includes(searchTerm)) ||
-          (plant.notes && plant.notes.toLowerCase().includes(searchTerm))
-      );
+    // Save watering history
+    saveWateringHistory() {
+        localStorage.setItem('botanica_watering_history', JSON.stringify(this.wateringHistory));
     }
 
-    return filteredPlants;
-  }
-
-  getStats() {
-    const total = this.plants.length;
-    const needsWater = this.plants.filter(
-      (plant) =>
-        plant.notes &&
-        (plant.notes.toLowerCase().includes("water") ||
-          plant.notes.toLowerCase().includes("thirsty"))
-    ).length;
-
-    const lowLight = this.plants.filter(
-      (plant) => plant.light === "low"
-    ).length;
-
-    return { total, needsWater, lowLight };
-  }
-
-  setLightFilter(light) {
-    this.currentLightFilter = light;
-  }
-
-  setWateringFilter(freq) {
-    this.currentWateringFilter = freq;
-  }
-
-  setDifficultyFilter(level) {
-    this.currentDifficultyFilter = level;
-  }
-
-  saveToStorage() {
-    localStorage.setItem("botanical-plants", JSON.stringify(this.plants));
-  }
-
-  /**
-   * Adds a new journal entry to a specific plant.
-   * @param {string} plantId - The ID of the plant.
-   * @param {object} entryData - { note, image }
-   */
-  addJournalEntry(plantId, entryData) {
-    const entry = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      note: entryData.note,
-      image: entryData.image || null,
-    };
-
-    const plant = this.getPlantById(plantId);
-    if (plant) {
-      // Ensure journal array exists (for older plants loaded from storage)
-      if (!plant.journal) {
-        plant.journal = [];
-      }
-      // Add newest entry to the start of the array (reverse chronological)
-      plant.journal.unshift(entry);
-      this.saveToStorage();
-      return entry;
+    // Load reminders
+    loadReminders() {
+        const stored = localStorage.getItem('botanica_reminders');
+        return stored ? JSON.parse(stored) : [];
     }
-    return null;
-  }
 
-  /**
-   * Deletes a specific journal entry from a plant.
-   * @param {string} plantId - The ID of the plant.
-   * @param {string} entryId - The ID of the entry to delete.
-   */
-  deleteJournalEntry(plantId, entryId) {
-    const plant = this.getPlantById(plantId);
-    if (plant && plant.journal) {
-      const initialLength = plant.journal.length;
-      plant.journal = plant.journal.filter((entry) => entry.id !== entryId);
-
-      if (plant.journal.length < initialLength) {
-        this.saveToStorage();
-        return true;
-      }
+    // Save reminders
+    saveReminders() {
+        localStorage.setItem('botanica_reminders', JSON.stringify(this.reminders));
     }
-    return false;
-  }
 
-  // Export/Import functionality
-  exportData() {
-    const data = JSON.stringify(this.plants, null, 2);
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    // Add plant
+    addPlant(plantData) {
+        const plant = {
+            id: Date.now(),
+            ...plantData,
+            journal: plantData.journal || [],
+            healthLogs: plantData.healthLogs || []
+        };
+        
+        this.plants.push(plant);
+        this.savePlants();
+        
+        // Create watering reminder if schedule exists
+        if (plant.wateringSchedule) {
+            this.createReminder(plant.id);
+        }
+        
+        return plant;
+    }
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `botanical-plants-${
-      new Date().toISOString().split("T")[0]
-    }.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+    // Delete plant
+    deletePlant(id) {
+        this.plants = this.plants.filter(plant => plant.id !== id);
+        delete this.wateringHistory[id];
+        this.reminders = this.reminders.filter(r => r.plantId !== id);
+        
+        this.savePlants();
+        this.saveWateringHistory();
+        this.saveReminders();
+    }
 
-  // importData data
-  importData(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+    // Get plant by ID
+    getPlantById(id) {
+        return this.plants.find(plant => plant.id == id);
+    }
 
-      reader.onload = (e) => {
-        try {
-          const importedPlants = JSON.parse(e.target.result);
+    // Get all plants with filters
+    getPlants() {
+        let filtered = [...this.plants];
 
-          if (Array.isArray(importedPlants)) {
-            // Validate plant structure
-            const validPlants = importedPlants.filter(
-              (plant) => plant && plant.name && plant.type
+        // Apply filter
+        if (this.currentFilter !== 'all') {
+            filtered = filtered.filter(plant => plant.type === this.currentFilter);
+        }
+
+        // Apply search
+        if (this.currentSearch) {
+            const search = this.currentSearch.toLowerCase();
+            filtered = filtered.filter(plant =>
+                plant.name.toLowerCase().includes(search) ||
+                (plant.species && plant.species.toLowerCase().includes(search))
             );
-            this.plants = this.plants.concat(validPlants);
-            this.saveToStorage();
-            resolve(validPlants.length);
-          } else {
-            reject("Invalid data format");
-          }
-        } catch (error) {
-          reject("Error parsing JSON");
+        }
+
+        return filtered;
+    }
+
+    // Set filter
+    setFilter(filter) {
+        this.currentFilter = filter;
+    }
+
+    // Set search
+    setSearch(search) {
+        this.currentSearch = search;
+    }
+
+    // Get recent plants
+    getRecentPlants(limit = 6) {
+        return [...this.plants]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, limit);
+    }
+
+    // Get stats
+    getStats() {
+        let needsWater = 0;
+        
+        this.plants.forEach(plant => {
+            if (plant.wateringSchedule) {
+                const days = this.getDaysUntilWatering(plant);
+                if (days !== null && days <= 0) needsWater++;
+            }
+        });
+
+        return {
+            total: this.plants.length,
+            needsWater: needsWater,
+            lowLight: this.plants.filter(p => p.light === 'low').length
+        };
+    }
+
+    // Add journal entry
+    addJournalEntry(plantId, entryData) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant) return false;
+
+        if (!plant.journal) plant.journal = [];
+
+        const entry = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            ...entryData
+        };
+
+        plant.journal.unshift(entry);
+        this.savePlants();
+        return true;
+    }
+
+    // Delete journal entry
+    deleteJournalEntry(plantId, entryId) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant || !plant.journal) return false;
+
+        plant.journal = plant.journal.filter(e => e.id != entryId);
+        this.savePlants();
+        return true;
+    }
+
+    // Add health log
+    addHealthLog(plantId, logData) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant) return false;
+
+        if (!plant.healthLogs) plant.healthLogs = [];
+
+        const log = {
+            id: Date.now(),
+            ...logData
+        };
+
+        plant.healthLogs.unshift(log);
+        this.savePlants();
+        return log;
+    }
+
+    // Delete health log
+    deleteHealthLog(plantId, logId) {
+        const plant = this.plants.find(p => p.id == plantId);
+        if (!plant || !plant.healthLogs) return false;
+
+        plant.healthLogs = plant.healthLogs.filter(l => l.id != logId);
+        this.savePlants();
+        return true;
+    }
+
+    // Add or update plant with watering schedule
+    addPlantWateringSchedule(plantId, schedule) {
+        const plant = this.plants.find(p => p.id === plantId);
+        if (plant) {
+            plant.wateringSchedule = {
+                frequency: schedule.frequency || 7,
+                lastWatered: schedule.lastWatered || new Date().toISOString(),
+                reminderTime: schedule.reminderTime || '09:00',
+                customDays: schedule.customDays || null,
+                notes: schedule.notes || ''
+            };
+            this.savePlants();
+            this.createReminder(plantId);
+            return true;
         }
       };
       reader.readAsText(file);
@@ -728,5 +589,5 @@ const plantManager = new PlantManager();
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => plantManager.init());
 } else {
-  plantManager.init();
+    plantManager.init();
 }
