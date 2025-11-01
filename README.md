@@ -1,3 +1,5 @@
+![](Botanica_readme.gif)
+
 # 🌿 Botanica - Plant Collection App
 
 Static web application for plant enthusiasts to collect, organize, and track their plant journey.  
