@@ -124,7 +124,7 @@
 
 .stat-card {
   background: var(--white);
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: var(--radius);
   text-align: center;
   box-shadow: var(--shadow);
