@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <link rel="icon" href="assets/icons/leaf.png" type="image/png" />
     <title>Botanica | Open Source Plant Collection</title>
 
@@ -59,27 +60,48 @@
             <i class="fas fa-plus"></i>
             <span>Add Plant</span>
           </button>
-          <button title="Discover" class="nav-btn" data-page="discover">
-            <i class="fas fa-compass"></i>
-            <span>Discover</span>
-          </button>
-          <button title="Care Calendar" class="nav-btn" data-page="calendar">
-            <i class="fas fa-calendar-alt"></i>
-            <span>Care Calendar</span>
-          </button>
-          <button title="About" class="nav-btn" data-page="about">
-            <i class="fas fa-info-circle"></i>
-            <span>About</span>
-          </button>
-          <button
-            title="Dark Mode"
-            onclick="handleThemeToggle()"
-            class="nav-btn theme-toggle"
-            style="cursor: pointer !important"
-          >
-            <i class="fas fa-moon"></i>
-            <span>Dark Mode</span>
-          </button>
+          
+          <!-- Tools Dropdown -->
+          <div class="nav-dropdown">
+            <button class="nav-btn dropdown-toggle">
+              <i class="fas fa-tools"></i>
+              <span>Tools</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" data-page="discover">
+                <i class="fas fa-compass"></i>
+                <span>Discover</span>
+              </button>
+              <button class="dropdown-item" data-page="calendar">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Care Calendar</span>
+              </button>
+              <button class="dropdown-item" id="music-toggle-btn">
+                <i class="fas fa-music"></i>
+                <span>Music <span id="music-status">(Off)</span></span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Settings Dropdown -->
+          <div class="nav-dropdown">
+            <button class="nav-btn dropdown-toggle">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" data-page="about">
+                <i class="fas fa-info-circle"></i>
+                <span>About</span>
+              </button>
+              <button class="dropdown-item" id="theme-toggle-dropdown">
+                <i class="fas fa-moon"></i>
+                <span>Dark Mode</span>
+              </button>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
@@ -956,13 +978,8 @@
     <script src="scripts/search-manager.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/scroll_btn.js" defer></script>
-
-    <script>
-      window.addEventListener("DOMContentLoaded", function () {
-        window.botanicalApp = new BotanicalApp();
-        window.searchManager = new SearchManager();
-      });
-    </script>
+    
+    
 
     <script>
       // Initialize watering system
@@ -1046,5 +1063,14 @@
     </div>
 
     <button onclick="topFunction()" id="scrollupBtn"><b>↑</b></button>
+    
+    <script>
+      // Global function for theme toggle from dropdown
+      function handleThemeToggle() {
+        if (window.app) {
+          window.app.toggleTheme();
+        }
+      }
+    </script>
   </body>
 </html>

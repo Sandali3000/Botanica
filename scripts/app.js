@@ -1,23 +1,209 @@
 class BotanicalApp {
   constructor() {
-    this.plantManager = new PlantManager();
-    this.wishlistManager = new WishlistManager();
-    this.imageHandler = new ImageHandler();
+    // Some manager classes may be undefined if their files fail to load
+    this.plantManager = (typeof PlantManager !== 'undefined') ? new PlantManager() : null;
+    this.wishlistManager = (typeof WishlistManager !== 'undefined') ? new WishlistManager() : null;
+    this.imageHandler = (typeof ImageHandler !== 'undefined') ? new ImageHandler() : null;
     this.currentPage = "dashboard";
 
-    // Make app instance globally available for search
-    window.app = this;
+  // Expose managers on window for inline handlers and other scripts
+  window.plantManager = this.plantManager;
+  window.wishlistManager = this.wishlistManager;
+  window.imageHandler = this.imageHandler;
 
     this.init();
   }
 
   init() {
-    this.bindEvents();
     this.loadThemePreference();
+    this.bindEvents();
+    
+    // Setup dropdowns immediately
+    this.setupDropdowns();
+    
     this.showPage("dashboard");
     this.updateDashboard();
     this.initializeSearch();
     this.createFallingLeaves();
+  }
+
+  setupDropdowns() {
+    console.log('=== DROPDOWN SETUP START ===');
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
+    
+    console.log('Found dropdowns:', dropdowns.length);
+    
+    if (dropdowns.length === 0) {
+      console.error('ERROR: No dropdowns found in DOM!');
+      return;
+    }
+    
+    dropdowns.forEach((dropdown, index) => {
+      const toggle = dropdown.querySelector('.dropdown-toggle');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      
+      console.log(`Dropdown ${index}:`, {
+        toggle: toggle ? 'FOUND' : 'MISSING',
+        menu: menu ? 'FOUND' : 'MISSING',
+        text: toggle ? toggle.textContent.trim() : 'N/A'
+      });
+      
+      if (!toggle) {
+        console.error(`ERROR: No toggle found for dropdown ${index}`);
+        return;
+      }
+      
+      // Add click handler with maximum priority
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        console.log('=== TOGGLE CLICKED ===', toggle.textContent.trim());
+        
+        // Close all dropdowns
+        document.querySelectorAll('.nav-dropdown').forEach(d => {
+          d.classList.remove('active');
+        });
+        
+        // Open this one
+        dropdown.classList.add('active');
+        console.log('Dropdown opened, active class added');
+      }, true); // Use capture phase
+      
+      // Handle dropdown items
+      if (menu) {
+        menu.querySelectorAll('.dropdown-item').forEach(item => {
+          item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const page = item.dataset.page;
+            
+            console.log('Dropdown item clicked:', item.id || page);
+            
+            // Check if this is the music toggle button
+            if (item.id === 'music-toggle-btn') {
+              window.app.toggleMusicPanel();
+              dropdown.classList.remove('active');
+              return;
+            }
+            
+            // Check if this is the theme toggle button
+            if (item.id === 'theme-toggle-dropdown') {
+              window.app.toggleTheme();
+              dropdown.classList.remove('active');
+              return;
+            }
+            
+            if (page) {
+              window.app.showPage(page);
+              dropdown.classList.remove('active');
+            }
+          });
+        });
+      }
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.nav-dropdown').forEach(d => {
+        d.classList.remove('active');
+      });
+    });
+  }
+
+  setupFooter() {
+    const btn = document.getElementById('footer-toggle');
+    const footer = document.querySelector('.footer');
+    
+    if (btn && footer) {
+      btn.addEventListener('click', () => {
+        footer.classList.toggle('collapsed');
+        const icon = btn.querySelector('i');
+        const text = btn.querySelector('span');
+        
+        if (footer.classList.contains('collapsed')) {
+          icon.className = 'fas fa-chevron-down';
+          text.textContent = 'Show Footer';
+        } else {
+          icon.className = 'fas fa-chevron-up';
+          text.textContent = 'Hide Footer';
+        }
+      });
+    }
+  }
+
+  toggleMusicPanel() {
+    console.log('=== TOGGLE MUSIC PANEL ===');
+    let audioControls = document.querySelector('.audio-controls');
+    const musicStatus = document.getElementById('music-status');
+    const musicButton = document.getElementById('music-toggle-btn');
+    
+    console.log('Audio controls element:', audioControls ? 'FOUND' : 'NOT FOUND');
+    console.log('Music status element:', musicStatus ? 'FOUND' : 'NOT FOUND');
+    console.log('Window.audioManager exists:', typeof window.audioManager !== 'undefined');
+    
+    // If audio controls don't exist, try to initialize audio manager
+    if (!audioControls) {
+      console.log('AudioManager: Controls not found, attempting to initialize...');
+      if (typeof AudioManager !== 'undefined') {
+        try {
+          window.audioManager = new AudioManager();
+          audioControls = document.querySelector('.audio-controls');
+          console.log('AudioManager: Created on demand, controls now:', audioControls ? 'FOUND' : 'STILL NOT FOUND');
+        } catch (error) {
+          console.error('AudioManager: Failed to create on demand:', error);
+        }
+      } else {
+        console.error('AudioManager: Class not defined!');
+      }
+    }
+    
+    if (audioControls) {
+      // Toggle visibility
+      const wasVisible = audioControls.classList.contains('visible');
+      
+      if (wasVisible) {
+        audioControls.classList.remove('visible');
+      } else {
+        audioControls.classList.add('visible');
+      }
+      
+      const isVisible = audioControls.classList.contains('visible');
+      
+      console.log('Music panel is now:', isVisible ? 'VISIBLE ✅' : 'HIDDEN ❌');
+      console.log('Classes on audio-controls:', audioControls.className);
+      
+      // Update status text
+      if (musicStatus) {
+        musicStatus.textContent = isVisible ? '(On)' : '(Off)';
+        musicStatus.style.color = isVisible ? '#4CAF50' : '#999';
+        musicStatus.style.fontWeight = isVisible ? 'bold' : 'normal';
+        console.log('Status text updated to:', musicStatus.textContent);
+      } else {
+        console.error('Music status element not found!');
+      }
+      
+      // Update button appearance
+      if (musicButton) {
+        if (isVisible) {
+          musicButton.style.backgroundColor = '#e8f5e9';
+          musicButton.style.color = '#4CAF50';
+        } else {
+          musicButton.style.backgroundColor = '';
+          musicButton.style.color = '';
+        }
+      }
+      
+      if (isVisible) {
+        this.showNotification('🎵 Music panel shown at bottom-left corner', 'success');
+      } else {
+        this.showNotification('Music panel hidden', 'info');
+      }
+    } else {
+      console.error('❌ CRITICAL: Audio controls element could not be created!');
+      console.error('Check if audio-manager.js is loaded and working');
+      this.showNotification('❌ Music panel unavailable - check console for errors', 'error');
+    }
   }
 
   setDefaultWateringDate() {
@@ -277,6 +463,7 @@ class BotanicalApp {
         if (!targetLink) return;
 
         const page = targetLink.getAttribute("data-page");
+        console.log('Footer link clicked:', page);
 
         // --- THIS IS THE NEW LOGIC ---
         if (page && page === this.currentPage) {
@@ -284,6 +471,8 @@ class BotanicalApp {
           this.showNotification("You are already on this page", "info");
         } else if (page) {
           this.showPage(page);
+          // Scroll to top when navigating
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         // --- END OF NEW LOGIC ---
       });
@@ -319,22 +508,41 @@ class BotanicalApp {
     // --- END Contact Modal Listeners ---
 
     // Navigation - Use event delegation
-    document.querySelector(".nav").addEventListener("click", (e) => {
-      if (e.target.closest(".nav-btn")) {
-        const btn = e.target.closest(".nav-btn");
-        const page = btn.dataset.page;
-
-        if (page) {
-          // --- THIS IS THE NEW LOGIC ---
-          if (page === this.currentPage) {
-            this.showNotification("You are already on this page", "info");
-          } else {
-            this.showPage(page);
-          }
-          // --- END OF NEW LOGIC ---
+    const navElement = document.querySelector(".nav");
+    if (navElement) {
+      navElement.addEventListener("click", (e) => {
+        // Check if click is inside a dropdown
+        if (e.target.closest('.nav-dropdown')) {
+          console.log('Click inside dropdown, ignoring nav handler');
+          return;
         }
-      }
-    });
+        
+        const btn = e.target.closest(".nav-btn");
+        
+        // Skip if it's a dropdown toggle
+        if (btn && btn.classList.contains('dropdown-toggle')) {
+          console.log('Dropdown toggle clicked, ignoring nav handler');
+          return;
+        }
+        
+        if (btn) {
+          const page = btn.dataset.page;
+          console.log('Nav button clicked:', page);
+
+          if (page) {
+            // --- THIS IS THE NEW LOGIC ---
+            if (page === this.currentPage) {
+              this.showNotification("You are already on this page", "info");
+            } else {
+              this.showPage(page);
+            }
+            // --- END OF NEW LOGIC ---
+          }
+        }
+      });
+    } else {
+      console.warn('Nav element not found');
+    }
 
     // Botanica logo click to return to dashboard
     document.querySelector(".logo").addEventListener("click", () => {
@@ -460,37 +668,50 @@ class BotanicalApp {
 
   loadThemePreference() {
     const savedTheme = localStorage.getItem("theme");
-    const themeToggle = document.getElementById("theme-toggle");
-
     if (savedTheme === "dark") {
       document.documentElement.setAttribute("data-theme", "dark");
-      if (themeToggle) {
-        themeToggle.querySelector("i").className = "fas fa-sun";
-        themeToggle.querySelector("span").textContent = "Light Mode";
-      }
+    } else if (savedTheme === "light") {
+      document.documentElement.removeAttribute("data-theme");
     }
+
+    // Sync UI toggles (supports multiple toggle button variants)
+    this.updateThemeToggleUI();
   }
 
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute("data-theme");
-    const themeToggle = document.getElementById("theme-toggle");
-    const icon = themeToggle.querySelector("i");
 
     if (currentTheme === "dark") {
       document.documentElement.removeAttribute("data-theme");
-      icon.className = "fas fa-moon";
-      themeToggle.querySelector("span").textContent = "Dark Mode";
+      localStorage.setItem("theme", "light");
     } else {
       document.documentElement.setAttribute("data-theme", "dark");
-      icon.className = "fas fa-sun";
-      themeToggle.querySelector("span").textContent = "Light Mode";
+      localStorage.setItem("theme", "dark");
     }
 
-    // Save preference to localStorage
-    localStorage.setItem(
-      "theme",
-      document.documentElement.getAttribute("data-theme") || "light"
-    );
+    // Update any visible toggle buttons/icons/text
+    this.updateThemeToggleUI();
+  }
+
+  // Update the icon/text on any theme toggle elements that exist
+  updateThemeToggleUI() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+
+    // Collect possible toggle elements
+    const toggles = new Set();
+    const byId = document.getElementById("theme-toggle");
+    const byDropdown = document.getElementById("theme-toggle-dropdown");
+    document.querySelectorAll(".theme-toggle").forEach(el => toggles.add(el));
+    if (byId) toggles.add(byId);
+    if (byDropdown) toggles.add(byDropdown);
+
+    // Update all discovered toggle elements
+    toggles.forEach((el) => {
+      const icon = el.querySelector("i");
+      const text = el.querySelector("span");
+      if (icon) icon.className = `fas fa-${isDark ? "sun" : "moon"}`;
+      if (text) text.textContent = isDark ? "Light Mode" : "Dark Mode";
+    });
   }
 
   /**
@@ -562,6 +783,15 @@ class BotanicalApp {
   }
 
   updateDashboard() {
+    if (!this.plantManager) {
+      // Set zeros if plantManager is not available
+      document.getElementById("total-plants").textContent = "0";
+      document.getElementById("needs-water").textContent = "0";
+      document.getElementById("low-light").textContent = "0";
+      document.getElementById("recent-plants-grid").innerHTML = '<p style="text-align:center;color:var(--text-light);">Plant features temporarily unavailable</p>';
+      return;
+    }
+    
     const stats = this.plantManager.getStats();
 
     // Update stats
@@ -614,6 +844,11 @@ class BotanicalApp {
   renderCollection() {
     const container = document.getElementById("collection-grid");
     if (!container) return;
+
+    if (!this.plantManager) {
+      container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-light);">Plant features temporarily unavailable</p>';
+      return;
+    }
 
     let plants = this.plantManager.getPlants();
 
@@ -698,67 +933,40 @@ class BotanicalApp {
     }
 
     return `
-            <div class="plant-card" data-plant-id="${plant.id}">
-                <img src="${imageSrc}" 
-                    alt="${plant.name}" 
-                    class="plant-image"
-                    onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
-                <div class="plant-info">
-                    <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
-                    ${
-                      plant.species
-                        ? `<p class="plant-species">${this.escapeHtml(
-                            plant.species
-                          )}</p>`
-                        : ""
-                    }
-                    <div class="plant-meta">
-                        <span class="plant-type">${plant.type}</span>
-                        <span class="plant-light">
-                            <i class="${
-                              lightIcons[plant.light] || "fas fa-sun"
-                            }"></i>
-                            ${plant.light}
-                        </span>
-                    </div>
-                    ${wateringStatusHTML}
-                </div>
-            </div>
-        `;
-    //bug code
-    //   <div class="plant-card" data-plant-id="${plant.id}">
-    //     <img src="${imageSrc}"
-    //       alt="${this.escapeHtml(plant.name)}"
-    //       class="plant-image"
-    //       onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
-    //     <div class="plant-info">
-    //       <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
-    //       ${
-    //         plant.species
-    //           ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
-    //           : ""
-    //       }
-    //          <div class="plant-meta">
-    //         <span class="plant-type">${this.escapeHtml(plant.type)}</span>
-    //         <span class="plant-light">
-    //           <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
-    //           ${this.escapeHtml(plant.light)}
-    //         </span>
-    //       </div>
-    //       <div class="plant-badges">
-    //         <span class="badge small">Water: ${this.escapeHtml(
-    //           plant.wateringFrequency || "weekly"
-    //         )}</span>
-    //         <span class="badge small">${this.escapeHtml(
-    //           plant.difficulty
-    //             ? plant.difficulty.charAt(0).toUpperCase() +
-    //                 plant.difficulty.slice(1)
-    //             : "Easy"
-    //         )}</span>
-    //       </div>
-    //     </div>
-    //   </div>
-    // `;
+      <div class="plant-card" data-plant-id="${plant.id}">
+        <img src="${imageSrc}" 
+          alt="${this.escapeHtml(plant.name)}" 
+          class="plant-image"
+          onerror="this.src='https://via.placeholder.com/300x200/8bb574/ffffff?text=🌿'">
+        <div class="plant-info">
+          <h3 class="plant-name">${this.escapeHtml(plant.name)}</h3>
+          ${
+            plant.species
+              ? `<p class="plant-species">${this.escapeHtml(plant.species)}</p>`
+              : ""
+          }
+          <div class="plant-meta">
+            <span class="plant-type">${this.escapeHtml(plant.type)}</span>
+            <span class="plant-light">
+              <i class="${lightIcons[plant.light] || "fas fa-sun"}"></i>
+              ${this.escapeHtml(plant.light)}
+            </span>
+          </div>
+          <div class="plant-badges">
+            <span class="badge small">Water: ${this.escapeHtml(
+              plant.wateringFrequency || "weekly"
+            )}</span>
+            <span class="badge small">${this.escapeHtml(
+              plant.difficulty
+                ? plant.difficulty.charAt(0).toUpperCase() +
+                    plant.difficulty.slice(1)
+                : "Easy"
+            )}</span>
+          </div>
+          ${wateringStatusHTML}
+        </div>
+      </div>
+    `;
   }
 
   resetPlantForm() {
@@ -803,6 +1011,12 @@ class BotanicalApp {
     const plantName = document.getElementById("plant-name");
     if (!plantName || !plantName.value.trim()) {
       this.showNotification("Please enter a plant name", "error");
+      return;
+    }
+
+    // Check for unique plant name
+    if (this.plantManager.hasPlantName(plantName.value)) {
+      this.showNotification("Please use a unique plant name", "error");
       return;
     }
 
@@ -1765,4 +1979,6 @@ document.head.appendChild(style);
 // Initialize app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new BotanicalApp();
+  // Provide a compatibility alias used by some scripts (e.g., theme-debug)
+  window.botanicalApp = window.app;
 });
