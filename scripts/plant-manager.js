@@ -11,12 +11,50 @@ class PlantManager {
         this.currentSearch = '';
     }
 
-    // Initialize the watering management system
-    init() {
-        this.startReminderChecker();
-        this.updateWateringIndicators();
-        this.renderWateringNotifications();
-    }
+    return plant;
+  }
+
+  // Delete plant
+  deletePlant(id) {
+    this.plants = this.plants.filter((plant) => plant.id !== id);
+    delete this.wateringHistory[id];
+    this.reminders = this.reminders.filter((r) => r.plantId !== id);
+
+    this.savePlants();
+    this.saveWateringHistory();
+    this.saveReminders();
+    this.saveToStorage();
+  }
+
+  // Get plant by ID
+  getPlantById(id) {
+    return this.plants.find((plant) => plant.id == id);
+  }
+
+  // returns if a plant name already exists
+  hasPlantName(name) {
+    const sanitizedName = `${name}`.trim().toLowerCase();
+    return this.plants.find(
+      (plant) => plant.name.trim().toLowerCase() === sanitizedName
+    );
+  }
+
+  // Set filter
+  setFilter(filter) {
+    this.currentFilter = filter;
+  }
+
+  // Set search
+  setSearch(search) {
+    this.currentSearch = search;
+  }
+
+  // Get recent plants
+  getRecentPlants(limit = 6) {
+    return [...this.plants]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, limit);
+  }
 
     // Load plants from localStorage
     loadPlants() {
