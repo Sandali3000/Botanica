@@ -969,6 +969,36 @@ class BotanicalApp {
     `;
   }
 
+  resetPlantForm() {
+    const byId = (id) => document.getElementById(id);
+    const name = byId("plant-name");
+    const species = byId("plant-species");
+    const type = byId("plant-type");
+    const light = byId("light-requirement");
+    const notes = byId("plant-notes");
+    const frequency = byId("watering-schedule-frequency");
+    const lastWatered = byId("last-watered");
+    const reminder = byId("reminder-time");
+
+    if (name) name.value = "";
+    if (species) species.value = "";
+    if (type) type.selectedIndex = 0;
+    if (light) light.selectedIndex = 0;
+    if (notes) notes.value = "";
+    if (frequency) frequency.value = "";
+    if (lastWatered) lastWatered.value = new Date().toISOString().split("T")[0];
+    if (reminder) reminder.value = "09:00";
+
+    // image handler clear
+    // if (this.imageHandler) {
+    //   this.imageHandler.clearImage();
+    // }
+
+    // ensure any other UI state is reset
+    // const form = byId("plant-form");
+    // if (form) form.classList.remove("was-validated");
+  }
+  
   async handlePlantSubmit() {
     // Validate image
     const imageValidation = this.imageHandler.validateImage();
@@ -991,21 +1021,23 @@ class BotanicalApp {
     }
 
     // Get watering schedule data
-    const wateringFrequency = document.getElementById("watering-frequency");
+    const wateringFrequency = document.getElementById(
+      "watering-schedule-frequency"
+    );
     const lastWatered = document.getElementById("last-watered");
     const reminderTime = document.getElementById("reminder-time");
 
     const wateringSchedule = {
-      frequency: wateringFrequency ? parseInt(wateringFrequency.value) : 7,
-      lastWatered:
-        lastWatered && lastWatered.value
-          ? lastWatered.value
-          : new Date().toISOString().split("T")[0],
+      frequency: wateringFrequency?.value
+        ? parseInt(wateringFrequency.value)
+        : 7,
+      lastWatered: lastWatered?.value
+        ? lastWatered.value
+        : new Date().toISOString().split("T")[0],
       reminderTime: reminderTime ? reminderTime.value : "09:00",
       notes: "",
     };
 
-    // Get form data
     const plantData = {
       name: plantName.value.trim(),
       species: document.getElementById("plant-species").value.trim(),
@@ -1029,7 +1061,8 @@ class BotanicalApp {
 
       // Reset form and return to collection
       this.imageHandler.clearImage();
-      document.getElementById("plant-form").reset();
+      // document.getElementById("plant-form").reset();
+      // this.resetPlantForm();
       this.showPage("collection");
 
       // Update dashboard stats

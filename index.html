@@ -6,18 +6,18 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <link rel="icon" href="assets/icons/leaf.png" type="image/png" />
     <title>Botanica | Open Source Plant Collection</title>
-    
+
     <!-- 🤖 Botanica Chatbot Configuration -->
     <script>
       window.BOTANICA_CONFIG = {
         // Get your Gemini API key from: https://aistudio.google.com/app/apikey
-        GEMINI_API_KEY: 'your_gemini_api_key_here',
+        GEMINI_API_KEY: "your_gemini_api_key_here",
         DEBUG_MODE: false,
         MAX_MESSAGES_HISTORY: 20,
         AUTO_FOCUS_INPUT: true,
       };
     </script>
-    
+
     <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/components.css" />
     <link rel="stylesheet" href="styles/responsive.css" />
@@ -40,7 +40,11 @@
           <span class="badge">Nature Lovers</span>
         </div>
         <nav class="nav">
-          <button title="dashboard" class="nav-btn active" data-page="dashboard">
+          <button
+            title="dashboard"
+            class="nav-btn active"
+            data-page="dashboard"
+          >
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
           </button>
@@ -101,7 +105,7 @@
         </nav>
       </div>
     </header>
-    <div id="watering-notifications" style="display: none;"></div>
+    <div id="watering-notifications" style="display: none"></div>
 
     <main class="main">
       <div class="container">
@@ -132,7 +136,6 @@
               </div>
             </div>
           </div>
-
         </div>
 
         <div id="collection" class="page">
@@ -305,7 +308,9 @@
                 </select>
               </div>
               <div class="form-group">
-                <label class="add-new-plant" for="light-requirement">Light Requirement</label>
+                <label class="add-new-plant" for="light-requirement"
+                  >Light Requirement</label
+                >
                 <select id="light-requirement">
                   <option value="low">Low Light</option>
                   <option value="medium">Medium Light</option>
@@ -316,7 +321,9 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label class="add-new-plant" for="watering-frequency">Watering Frequency</label>
+                <label class="add-new-plant" for="watering-frequency"
+                  >Watering Frequency</label
+                >
                 <select id="watering-frequency">
                   <option value="weekly">Weekly</option>
                   <option value="daily">Daily</option>
@@ -344,20 +351,30 @@
             </div>
 
             <div class="watering-schedule-form">
-              <h3 style="color: var(--primary); margin-bottom: 16px;">💧 Watering Schedule</h3>
-              
+              <h3 style="color: var(--primary); margin-bottom: 16px">
+                💧 Watering Schedule
+              </h3>
+
               <div class="form-row">
                 <div class="form-group">
-                  <label for="watering-frequency">Watering Frequency (days)</label>
-                  <input type="number" id="watering-frequency" min="1" max="365" value="7" />
+                  <label for="watering-schedule-frequency"
+                    >Watering Frequency (days)</label
+                  >
+                  <input
+                    type="number"
+                    id="watering-frequency"
+                    min="1"
+                    max="365"
+                    value="7"
+                  />
                 </div>
-                
+
                 <div class="form-group">
                   <label for="reminder-time">Reminder Time</label>
                   <input type="time" id="reminder-time" value="09:00" />
                 </div>
               </div>
-              
+
               <div class="form-group">
                 <label for="last-watered">Last Watered Date</label>
                 <input type="date" id="last-watered" />
@@ -370,9 +387,7 @@
               </button>
               <button type="submit" class="btn-primary">
                 <i class="fas fa-plus add-new-plant"></i>
-                <div class="add-new-plant">
-                  Add to Collection
-                </div>
+                <div class="add-new-plant">Add to Collection</div>
               </button>
             </div>
           </form>
@@ -574,34 +589,34 @@
           </div>
         </div>
 
-
-
         <div id="calendar" class="page">
-  <div class="page-header">
-    <h2>🌿 Care Calendar</h2>
-  </div>
+          <div class="page-header">
+            <h2>🌿 Care Calendar</h2>
+          </div>
 
-  <div class="calendar-controls">
-    <div class="calendar-nav">
-      <button id="prev-month">◀</button>
-      <h3 id="current-month"></h3>
-      <button id="next-month">▶</button>
-    </div>
-    <button id="add-reminder" class="btn-primary">+ Add Reminder</button>
-  </div>
+          <div class="calendar-controls">
+            <div class="calendar-nav">
+              <button id="prev-month">◀</button>
+              <h3 id="current-month"></h3>
+              <button id="next-month">▶</button>
+            </div>
+            <button id="add-reminder" class="btn-primary">
+              + Add Reminder
+            </button>
+          </div>
 
-  <div class="calendar-header">
-    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
-    <span>Thu</span><span>Fri</span><span>Sat</span>
-  </div>
+          <div class="calendar-header">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
+            <span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
 
-  <div class="calendar-grid" id="calendar-grid"></div>
+          <div class="calendar-grid" id="calendar-grid"></div>
 
-  <div class="reminders-list">
-    <h3>Upcoming Care Tasks</h3>
-    <div id="upcoming-reminders"></div>
-  </div>
-</div>
+          <div class="reminders-list">
+            <h3>Upcoming Care Tasks</h3>
+            <div id="upcoming-reminders"></div>
+          </div>
+        </div>
 
         <div id="discover" class="page">
           <div class="page-header">
@@ -942,17 +957,17 @@
     </footer>
 
     <!-- Load CSS files -->
-    <link rel="stylesheet" href="styles/theme-button.css">
-    
+    <link rel="stylesheet" href="styles/theme-button.css" />
+
     <!-- Simple theme script -->
     <script src="scripts/simple-theme.js"></script>
-    
+
     <!-- Chatbot scripts (must load before app.js) -->
     <script src="scripts/env-config.js"></script>
     <script src="scripts/chatbot-context.js"></script>
     <script src="scripts/chatbot-api.js"></script>
     <script src="scripts/chatbot-widget.js"></script>
-    
+
     <!-- App scripts -->
     <script src="scripts/tooltip.js"></script>
     <script src="scripts/image-handler.js"></script>
@@ -968,29 +983,29 @@
 
     <script>
       // Initialize watering system
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         // Initialize plant manager
-        if (typeof plantManager !== 'undefined') {
+        if (typeof plantManager !== "undefined") {
           plantManager.init();
         }
-        
+
         // Update dashboard stats every 5 seconds
         setInterval(updateDashboardStats, 5000);
       });
 
       // Update dashboard statistics
       function updateDashboardStats() {
-        if (typeof plantManager === 'undefined' || !plantManager.plants) return;
-        
+        if (typeof plantManager === "undefined" || !plantManager.plants) return;
+
         const plants = plantManager.plants || [];
         let needsWater = 0;
-        
-        plants.forEach(plant => {
+
+        plants.forEach((plant) => {
           const days = plantManager.getDaysUntilWatering(plant);
           if (days !== null && days <= 0) needsWater++;
         });
-        
-        const needsWaterEl = document.getElementById('needs-water');
+
+        const needsWaterEl = document.getElementById("needs-water");
         if (needsWaterEl) {
           needsWaterEl.textContent = needsWater;
         }
@@ -1027,12 +1042,22 @@
 
     <div class="search-wrapper">
       <div class="search-container">
-        <input type="text" id="site-search" class="search-input" placeholder="Search..." aria-label="Search website content">
+        <input
+          type="text"
+          id="site-search"
+          class="search-input"
+          placeholder="Search..."
+          aria-label="Search website content"
+        />
         <button class="search-button">
           <i class="fas fa-search"></i>
         </button>
       </div>
-      <div id="search-results" class="search-results-dropdown" style="display: none;">
+      <div
+        id="search-results"
+        class="search-results-dropdown"
+        style="display: none"
+      >
         <!-- Search results will be populated here -->
       </div>
     </div>
