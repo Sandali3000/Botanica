@@ -437,7 +437,7 @@ body {
 
 .floating-element i {
   font-size: 1.5rem;
-  color: var(--secondary);
+  color: var(--text-light);
 }
 
 .element-1 {
