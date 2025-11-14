@@ -156,6 +156,7 @@ class AudioManager {
   }
 
   createAudioControls() {
+    console.log('AudioManager: Creating audio controls...');
     const controls = document.createElement('div');
     controls.className = 'audio-controls';
     controls.innerHTML = `
@@ -192,6 +193,8 @@ class AudioManager {
     
     // Append to body
     document.body.appendChild(controls);
+    console.log('AudioManager: Audio controls added to DOM');
+    console.log('AudioManager: Controls element:', controls);
   }
 
   addStyles() {
@@ -201,19 +204,33 @@ class AudioManager {
     styles.id = 'audio-controls-styles';
     styles.textContent = `
       .audio-controls {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        z-index: 999;
-        background: var(--white);
-        border-radius: 50px;
-        padding: 12px 20px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        backdrop-filter: blur(10px);
-        border: 2px solid var(--light);
-        transition: all 0.3s ease;
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        z-index: 99999 !important;
+        background: var(--white) !important;
+        border-radius: 50px !important;
+        padding: 12px 20px !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 3px solid #4CAF50 !important;
+        transition: all 0.3s ease !important;
+        display: none !important;
+        opacity: 0 !important;
+        transform: translateY(20px) !important;
+        pointer-events: none !important;
+        min-width: 200px !important;
+        max-width: 600px !important;
       }
-
+      
+      .audio-controls.visible {
+        display: flex !important;
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        pointer-events: auto !important;
+        visibility: visible !important;
+      }
+      
       .audio-controls:hover {
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
         transform: translateY(-2px);
@@ -696,12 +713,24 @@ class AudioManager {
 // Initialize audio manager when DOM is ready
 let audioManager = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Small delay to ensure page is fully loaded
-  setTimeout(() => {
+function initAudioManager() {
+  try {
+    console.log('AudioManager: Starting initialization...');
     audioManager = new AudioManager();
-  }, 500);
-});
+    window.audioManager = audioManager;
+    console.log('AudioManager: ✅ Initialized successfully');
+    console.log('AudioManager: Controls in DOM:', document.querySelector('.audio-controls') ? 'YES' : 'NO');
+  } catch (error) {
+    console.error('AudioManager: ❌ Failed to initialize:', error);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAudioManager);
+} else {
+  // DOM already loaded
+  initAudioManager();
+}
 
 // Export for potential external use
 window.AudioManager = AudioManager;
