@@ -18,7 +18,7 @@ class BotanicalApp {
     this.loadThemePreference();
     this.bindEvents();
     
-    // Setup dropdowns immediately
+    // Setup dropdowns immediately 
     this.setupDropdowns();
     
     this.showPage("dashboard");
@@ -71,7 +71,7 @@ class BotanicalApp {
         console.log('Dropdown opened, active class added');
       }, true); // Use capture phase
       
-      // Handle dropdown items
+      // Handle dropdown items clicks
       if (menu) {
         menu.querySelectorAll('.dropdown-item').forEach(item => {
           item.addEventListener('click', function(e) {
