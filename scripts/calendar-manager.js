@@ -13,6 +13,7 @@ class CalendarManager {
     }
   }
 
+// Adds a new reminder
   addReminder(plantId, taskType, dueDate, frequency) {
     const reminder = {
       id: Date.now(),
